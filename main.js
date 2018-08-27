@@ -10,17 +10,20 @@ const path = require('path');
 
     var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
 
-    const static_path = path.join(__dirname + '/frontend');
-    const dashboard_path = path.join('/', randomid(16));
+    const frontend_path = path.join(__dirname, 'frontend');
+    const common_path = path.join(frontend_path, 'common');
+    const dashboard_path = path.join(frontend_path, 'dashboard');
+
+    const dashboard_root = path.join('/', randomid(16));
+    console.log(`Dashboard path: ${dashboard_root}`);
 
     var app = express();
 
-    app.use(dashboard_path, express.static(static_path));
-
-    console.log(`Dashboard path: ${dashboard_path}`);
+    app.use(express.static(common_path));
+    app.use(dashboard_root, express.static(dashboard_path));
 
     app.get('/', function (ignore, res) {
-        res.redirect(path.join(dashboard_path, 'dashboard.html'));
+        res.redirect('lost.html');
     });
 
     app.listen(8080);
