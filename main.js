@@ -8,14 +8,19 @@ const path = require('path');
 (function () {
     'use strict';
 
+    var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
+
     const static_path = path.join(__dirname + '/frontend');
+    const dashboard_path = path.join('/', randomid(16));
 
     var app = express();
 
-    app.use(express.static(static_path));
+    app.use(dashboard_path, express.static(static_path));
+
+    console.log(`Dashboard path: ${dashboard_path}`);
 
     app.get('/', function (ignore, res) {
-        res.redirect('dashboard.html');
+        res.redirect(path.join(dashboard_path, 'dashboard.html'));
     });
 
     app.listen(8080);
