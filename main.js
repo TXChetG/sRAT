@@ -4,6 +4,7 @@
 /*jslint es6 */
 const express = require('express');
 const path = require('path');
+const opn = require('opn');
 
 (function () {
     'use strict';
@@ -25,6 +26,8 @@ const path = require('path');
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
+
+    opn(`http://127.0.0.1:8080${dashboard_root}`, {'wait': false});
 
     app.listen(8080);
 }());
