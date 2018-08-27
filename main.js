@@ -27,7 +27,7 @@ const opn = require('opn');
         res.redirect('lost.html');
     });
 
-    opn(`http://127.0.0.1:8080${dashboard_root}`, {'wait': false});
-
-    app.listen(8080);
+    app.listen(8080, function () {
+        opn(`http://0.0.0.0:8080${dashboard_root}`, {'wait': false});
+    });
 }());
