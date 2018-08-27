@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/dglmoore/srat/issues"
   },
-  "homepage": "https://github.com/dglmoore/srat"
+  "homepage": "https://github.com/dglmoore/srat",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
