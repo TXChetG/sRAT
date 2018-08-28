@@ -1,9 +1,10 @@
 // Copyright 2018 Nicole M. Lozano. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
-/*jslint es6 */
+/*jslint es6, this */
 const express = require('express');
 const hbs = require('hbs');
+const bodyParser = require('body-parser');
 const database = require('./database');
 
 (function () {
@@ -21,6 +22,10 @@ const database = require('./database');
 
     var app = express();
 
+    app.use(bodyParser.json({
+        type: () => true
+    }));
+    app.use(bodyParser.urlencoded({extended: false}));
     app.use(express.static('frontend'));
 
     hbs.registerPartials(__dirname + '/frontend/common/views/partials/');
@@ -35,6 +40,26 @@ const database = require('./database');
                 res.send({'error': err});
             } else {
                 res.send(rows);
+            }
+        });
+    });
+
+    app.put(dashboard_root + '/quizzes/new', function (req, res) {
+        db.add_quiz(req.body, function (err) {
+            if (err !== null) {
+                res.send({'error': err});
+            } else {
+                const quizid = this.lastID;
+                console.log(`Insert was successful with quizid=${quizid}`);
+                db.get_quiz(quizid, function (err, row) {
+                    console.log(quizid);
+                    if (err !== null) {
+                        res.send({'error': err});
+                    } else {
+                        console.log(row);
+                        res.send(row);
+                    }
+                });
             }
         });
     });

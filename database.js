@@ -36,7 +36,11 @@ module.exports.Database = function (filename = 'srat.db') {
     };
 
     var add_quiz = function (quiz, callback) {
-        return db.run('INSERT INTO quizzes(name, admindate) VALUES (?name, ?admindate)', quiz, callback);
+        return db.run('INSERT INTO quizzes(name, admindate) VALUES (?, ?)', quiz.name, quiz.admindate, callback);
+    };
+
+    var get_quiz = function (quizid, callback) {
+        return db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, callback);
     };
 
     return {
@@ -44,6 +48,7 @@ module.exports.Database = function (filename = 'srat.db') {
         close: close,
 
         list_quizzes,
-        add_quiz
+        add_quiz,
+        get_quiz
     };
 };
