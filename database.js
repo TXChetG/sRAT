@@ -32,7 +32,7 @@ module.exports.Database = function (filename = 'srat.db') {
     };
 
     var list_quizzes = function (callback) {
-        return db.run('SELECT * FROM quizzes', callback);
+        return db.all('SELECT * FROM quizzes', callback);
     };
 
     var add_quiz = function (quiz, callback) {
