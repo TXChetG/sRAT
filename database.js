@@ -4,7 +4,7 @@
 /*jslint es6 */
 const sqlite3 = require('sqlite3').verbose();
 
-module.exports.Database = function (filename = 'srat.db') {
+module.exports.Database = function (filename = 'srat.db', callback) {
     var db = new sqlite3.Database(filename, function (err) {
         if (err !== null) {
             return console.error(`cannot open database ${filename}: ${err}`);
@@ -12,29 +12,13 @@ module.exports.Database = function (filename = 'srat.db') {
     });
 
     db.serialize(function () {
-        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT, admindate TEXT)', function (err) {
-            if (err !== null) {
-                return console.error(`cannot create quizzes table: ${err}`);
-            }
-        });
+        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT, admindate TEXT)', callback);
 
-        db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER PRIMARY KEY, quizid INTEGER, statement TEXT, correct INTEGER)', function (err) {
-            if (err !== null) {
-                return console.error(`cannot create questions table: ${err}`);
-            }
-        });
+        db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER PRIMARY KEY, quizid INTEGER, statement TEXT, correct INTEGER)', callback);
         
-        db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid))', function (err) {
-            if (err !== null) {
-                return console.error(`cannot create answers table: ${err}`);
-            }
-        });
+        db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid))', callback);
         
-        db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY)', function (err) {
-            if (err !== null) {
-                return console.error(`cannot create teams table: ${err}`);
-            }
-        });
+        db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY)', callback);
     });
 
     var close = function () {

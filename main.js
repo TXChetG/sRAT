@@ -18,7 +18,11 @@ const database = require('./database');
     const dashboard_root = '/' + randomid(16);
     console.log(`Dashboard Root: ${dashboard_root}`);
 
-    var db = database.Database('srat.db');
+    var db = database.Database('srat.db', function (err) {
+        if (err !== null) {
+            return console.error(`cannot create database: ${err}`);
+        }
+    });
 
     var app = express();
 
@@ -50,13 +54,10 @@ const database = require('./database');
                 res.send({'error': err});
             } else {
                 const quizid = this.lastID;
-                console.log(`Insert was successful with quizid=${quizid}`);
                 db.get_quiz(quizid, function (err, row) {
-                    console.log(quizid);
                     if (err !== null) {
                         res.send({'error': err});
                     } else {
-                        console.log(row);
                         res.send(row);
                     }
                 });
