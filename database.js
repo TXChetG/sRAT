@@ -12,9 +12,13 @@ module.exports.Database = function (filename = 'srat.db') {
     });
 
     db.serialize(function () {
-        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER) ', function (err) {
+        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER)', function (err) {
             if (err !== null) {
-                console.error(`cannot create quizzes table: ${err}`);
+                return console.error(`cannot create quizzes table: ${err}`);
+            }
+        }).run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER)', function (err) {
+            if (err !== null) {
+                return console.error(`cannot create quizzes table: ${err}`);
             }
         });
     });
