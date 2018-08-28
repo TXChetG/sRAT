@@ -16,9 +16,23 @@ module.exports.Database = function (filename = 'srat.db') {
             if (err !== null) {
                 return console.error(`cannot create quizzes table: ${err}`);
             }
-        }).run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER)', function (err) {
+        });
+
+        db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER PRIMARY KEY, quizid INTEGER, statement TEXT, correct INTEGER)', function (err) {
             if (err !== null) {
-                return console.error(`cannot create quizzes table: ${err}`);
+                return console.error(`cannot create questions table: ${err}`);
+            }
+        });
+        
+        db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid))', function (err) {
+            if (err !== null) {
+                return console.error(`cannot create answers table: ${err}`);
+            }
+        });
+        
+        db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY)', function (err) {
+            if (err !== null) {
+                return console.error(`cannot create teams table: ${err}`);
             }
         });
     });
