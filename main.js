@@ -18,11 +18,10 @@ const hbs = require('hbs');
 
     const dashboard_root = '/' + randomid(16);
     console.log(`Dashboard Root: ${dashboard_root}`);
-    console.log(`Frontend Path: ${frontend_path}`);
-    console.log(`Dashboard Path: ${dashboard_path}`);
 
     var app = express();
-    hbs.registerPartials(__dirname + '/frontend/common/views/partials');
+    app.use(express.static('frontend'));
+    hbs.registerPartials(__dirname + '/frontend/common/views/partials/');
     app.set('view engine', 'hbs');
     app.set('views',[__dirname + '/frontend/dashboard/views',__dirname + '/frontend/common/views']);
 
@@ -31,16 +30,12 @@ const hbs = require('hbs');
         res.render('dashboard.hbs');
     });
 
-    app.get('/dashboard', (req,res) => {
-        res.render('dashboard.hbs');
-    })
-
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
 
     app.listen(8080, function () {
-        opn(`http://localhost:8080${dashboard_root}`, {'wait': false});
+        //opn(`http://localhost:8080${dashboard_root}`, {'wait': false});
         //opn(`http://localhost:8080/dashboard`, {'wait': false})
     });
 }());
