@@ -12,7 +12,7 @@ module.exports.Database = function (filename = 'srat.db') {
     });
 
     db.serialize(function () {
-        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT, admin_date TEXT)', function (err) {
+        db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT, admindate TEXT)', function (err) {
             if (err !== null) {
                 return console.error(`cannot create quizzes table: ${err}`);
             }
@@ -36,7 +36,7 @@ module.exports.Database = function (filename = 'srat.db') {
     };
 
     var add_quiz = function (quiz, callback) {
-        return db.run('INSERT INTO quizzes(name, admin_date) VALUES (?name, ?admin_date)', quiz, callback);
+        return db.run('INSERT INTO quizzes(name, admindate) VALUES (?name, ?admindate)', quiz, callback);
     };
 
     return {
