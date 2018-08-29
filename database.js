@@ -36,16 +36,40 @@ module.exports.Database = function (filename = 'srat.db', callback) {
     var add_quiz = function (quiz, callback) {
         db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, function (err) {
             if (err !== null) {
+                console.log('Adding quiz failed');
                 return callback(err);
             }
 
             let quizid = this.lastID;
             if ('questions' in quiz && quiz.questions.constructor === Array) {
+                var promises = new Array();
                 for (let i = 0; i < quiz.questions.length; ++i) {
-                    add_question(quizid, quiz.questions[i], (err) => callback(err, quizid));
-                }
+                    console.log('Add question ' + i);
+                    let question = quiz.questions[i];
+                    promises.push(new Promise(function (resolve, reject) {
+                        add_question(quizid, question, function (err) {
+                            if (err != null) {
+                                console.log('Adding question ' + i + ' failed.');
+                                reject(err);
+                            } else {
+                                console.log('Adding question ' + i + ' succeeded.');
+                                resolve();
+                            }
+                        });
+                    }));
+                };
+                console.log('Waiting for all questions to add...');
+                Promise.all(promises).then(function() {
+                    console.log('All questions were successfully added.');
+                    callback(null, quizid);
+                }).catch(function (errors) {
+                    console.log("Questions\' promises have resolved. Something failed.");
+                    callback(errors, quizid)
+                });
+            } else {
+                console.log('No questions found.');
+                callback(err, quizid);
             }
-            callback(err, quizid);
         });
     };
 
@@ -58,11 +82,33 @@ module.exports.Database = function (filename = 'srat.db', callback) {
 
             let questionid = this.lastID;
             if ('answers' in question && question.answers.constructor === Array) {
+                var promises = new Array();
                 for (let i = 0; i < question.answers.length; ++i) {
                     let answerid = i + 1;
-                    add_answer(answerid, questionid, quizid, question.answers[i], callback);
+                    console.log('Add answer ' + answerid + ' for question ' + questionid);
+                    promises.push(new Promise(function (resolve, reject) {
+                        add_answer(answerid, questionid, quizid, question.answers[i], function (err) {
+                            if (err !== null) {
+                                console.log('Adding answer ' + answerid + ' for question ' + questionid + ' failed.');
+                                reject(err);
+                            } else {
+                                console.log('Adding answer ' + answerid + ' for question ' + questionid + ' succeeded.');
+                                resolve();
+                            }
+                        });
+                    }));
                 }
-            }
+                console.log('Waiting for all answers to add...');
+                Promise.all(promises).then(function () {
+                    console.log('All answers were successfully added.');
+                    callback(null, quizid);
+                }).catch(function (errors) {
+                    console.log('Some answers failed to add.');
+                    callback(errors)
+                });
+            } else {
+                callback(null);
+            };
         });
         stmt.finalize();
     };
