@@ -64,16 +64,16 @@ const database = require('./database');
         });
     });
 
+    app.get(dashboard_root + '/quizzes/new', function (ignore, res) {
+        res.render('quiz-create.hbs');
+    });
+
     app.use(dashboard_root, function (ignore, res) {
         res.render('dashboard.hbs');
     });
 
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
-    });
-
-    app.get('/new', function (ignore, res) {
-        res.render('quiz-create.hbs');
     });
 
     app.listen(8080);
