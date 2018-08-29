@@ -5,6 +5,8 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports.Database = function (filename = 'srat.db', callback) {
+    'use strict';
+
     var db = new sqlite3.Database(filename, function (err) {
         if (err !== null) {
             return console.error(`cannot open database ${filename}: ${err}`);
@@ -41,11 +43,27 @@ module.exports.Database = function (filename = 'srat.db', callback) {
 
             let quizid = this.lastID;
             if ('questions' in quiz && quiz.questions.constructor === Array) {
+                let promises = [];
                 for (let i = 0; i < quiz.questions.length; ++i) {
-                    add_question(quizid, quiz.questions[i], (err) => callback(err, quizid));
-                }
+                    let question = quiz.questions[i];
+                    promises.push(new Promise(function (resolve, reject) {
+                        add_question(quizid, question, function (err) {
+                            if (err != null) {
+                                reject(err);
+                            } else {
+                                resolve();
+                            }
+                        });
+                    }));
+                };
+                Promise.all(promises).then(function() {
+                    callback(null, quizid);
+                }).catch(function (errors) {
+                    callback(errors, quizid);
+                });
+            } else {
+                callback(err, quizid);
             }
-            callback(err, quizid);
         });
     };
 
@@ -58,11 +76,27 @@ module.exports.Database = function (filename = 'srat.db', callback) {
 
             let questionid = this.lastID;
             if ('answers' in question && question.answers.constructor === Array) {
+                let promises = [];
                 for (let i = 0; i < question.answers.length; ++i) {
                     let answerid = i + 1;
-                    add_answer(answerid, questionid, quizid, question.answers[i], callback);
+                    promises.push(new Promise(function (resolve, reject) {
+                        add_answer(answerid, questionid, quizid, question.answers[i], function (err) {
+                            if (err !== null) {
+                                reject(err);
+                            } else {
+                                resolve();
+                            }
+                        });
+                    }));
                 }
-            }
+                Promise.all(promises).then(function () {
+                    callback(null);
+                }).catch(function (errors) {
+                    callback(errors)
+                });
+            } else {
+                callback(null);
+            };
         });
         stmt.finalize();
     };
