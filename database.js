@@ -34,8 +34,44 @@ module.exports.Database = function (filename = 'srat.db', callback) {
     };
 
     var add_quiz = function (quiz, callback) {
-        return db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, callback);
+        db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, function (err) {
+            if (err !== null) {
+                return callback(err);
+            }
+
+            let quizid = this.lastID;
+            if ('questions' in quiz && quiz.questions.constructor === Array) {
+                for (let i = 0; i < quiz.questions.length; ++i) {
+                    add_question(quizid, quiz.questions[i], (err) => callback(err, quizid));
+                }
+            }
+            callback(err, quizid);
+        });
     };
+
+    var add_question = function (quizid, question, callback) {
+        let stmt = db.prepare('INSERT INTO questions (quizid, statement, correct) VALUES (?, ?, ?)');
+        stmt.run(quizid, question.statement, question.correct, function (err) {
+            if (err !== null) {
+                return callback(err);
+            }
+
+            let questionid = this.lastID;
+            if ('answers' in question && question.answers.constructor === Array) {
+                for (let i = 0; i < question.answers.length; ++i) {
+                    let answerid = i + 1;
+                    add_answer(answerid, questionid, quizid, question.answers[i], callback);
+                }
+            }
+        });
+        stmt.finalize();
+    };
+
+    var add_answer = function (answerid, questionid, quizid, statement, callback) {
+        let stmt = db.prepare('INSERT INTO answers (answerid, questionid, quizid, statement) VALUES (?, ?, ?, ?)');
+        stmt.run(answerid, questionid, quizid, statement, callback);
+        stmt.finalize();
+    }
 
     var get_quiz = function (quizid, callback) {
         return db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, callback);

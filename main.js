@@ -49,11 +49,10 @@ const database = require('./database');
     });
 
     app.put(dashboard_root + '/quizzes/new', function (req, res) {
-        db.add_quiz(req.body, function (err) {
+        db.add_quiz(req.body, function (err, quizid) {
             if (err !== null) {
                 res.send({'error': err});
             } else {
-                const quizid = this.lastID;
                 db.get_quiz(quizid, function (err, row) {
                     if (err !== null) {
                         res.send({'error': err});
