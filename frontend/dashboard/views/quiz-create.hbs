@@ -80,7 +80,7 @@
 					let obj = {};
 					let q = array[i];
 					obj.statement = data[q];
-					obj.correct = data["q" + i + "_correct"];
+					obj.correct = (parseInt(data["q" + i + "_correct"]) + 1);
 					obj.answers = [];
 					obj.answers.push(data["q" + i + "_answer_0"],data["q" + i + "_answer_1"],data["q" + i + "_answer_2"],data["q" + i + "_answer_3"]);
 					questionArray.push(obj);
