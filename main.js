@@ -71,9 +71,10 @@ const database = require('./database');
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
-    app.get('/new', (ignore, res) => {
+
+    app.get('/new', function (ignore, res) {
         res.render('quiz-create.hbs');
-    })
+    });
 
     app.listen(8080);
 }());
