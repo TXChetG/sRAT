@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/dglmoore/srat",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "hbs": "^4.0.1",
-    "opn": "^5.3.0"
+    "opn": "^5.3.0",
+    "sqlite3": "^4.0.2"
   }
 }

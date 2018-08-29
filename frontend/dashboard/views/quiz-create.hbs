@@ -15,8 +15,8 @@
 			<legend>Add or remove questions and answer choices.</legend>
 			<div class="questions_container">
 				<div class="question">
-					<label>Question Text:<input type="text" name="question_0"></label>			
-					<label>First Answer Choice:<input type="text" name="q0_answer_0"></label>			
+					<label>Question Text:<input type="text" name="question_0"></label>
+					<label>First Answer Choice:<input type="text" name="q0_answer_0"></label>
 					<label>Second Answer Choice:<input type="text" name="q0_answer_1"></label>
 					<label>Third Answer Choice:<input type="text" name="q0_answer_2"></label>
 					<label>Fourth Answer Choice:<input type="text" name="q0_answer_3"></label>
@@ -28,14 +28,14 @@
 							<option value="3">4</option>
 						</select>
 					</label>
-				</div>	
+				</div>
 			</div>
 			<button class="dashboard__button add_question">Add a Question</button>
 		</fieldset>
 		<input type="submit" class="dashboard__button submit_quiz" value="Add Quiz">
 	</form>
 	<script>
-	jQuery(document).ready(function($) {		
+	jQuery(document).ready(function($) {
 
 		const add_question = () => {
 			let i = $('.question').length;
@@ -80,16 +80,33 @@
 					let obj = {};
 					let q = array[i];
 					obj.statement = data[q];
-					obj.correct = data["q" + i + "_correct"];
+					obj.correct = (parseInt(data["q" + i + "_correct"]) + 1);
 					obj.answers = [];
 					obj.answers.push(data["q" + i + "_answer_0"],data["q" + i + "_answer_1"],data["q" + i + "_answer_2"],data["q" + i + "_answer_3"]);
 					questionArray.push(obj);
 				}
 				return questionArray;
 			};
-			
+
 			api_data.questions = questionObjtoJSON(questionList, data);
 			console.log(api_data);
+
+			sendRequest(api_data);
+		};
+
+		const sendRequest = function (data) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('PUT', window.location, true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(JSON.stringify(data));
+			xhr.onload = function () {
+				var response = JSON.parse(this.responseText);
+				if (response.error) {
+					console.error(`something broked: ${response.error}`);
+				} else {
+					console.log(response);
+				}
+			};
 		};
 
 		$('.new_quiz').submit((e) => {
