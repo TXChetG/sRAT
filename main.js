@@ -72,6 +72,10 @@ const database = require('./database');
         res.render('dashboard.hbs');
     });
 
+    app.get('/new', function (ignore, res) {
+        res.redirect(dashboard_root + '/quizzes/new');
+    });
+
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
