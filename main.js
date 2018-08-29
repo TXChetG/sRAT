@@ -33,9 +33,12 @@ const hbs = require('hbs');
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
+    app.get('/new', (ignore, res) => {
+        res.render('quiz-create.hbs');
+    })
 
     app.listen(8080, function () {
-        //opn(`http://localhost:8080${dashboard_root}`, {'wait': false});
+        opn(`http://localhost:8080${dashboard_root}`, {'wait': false});
         //opn(`http://localhost:8080/dashboard`, {'wait': false})
     });
 }());
