@@ -75,7 +75,6 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                 return callback(err);
             }
 
-            let questionid = this.lastID;
             if ('answers' in question && question.answers.constructor === Array) {
                 let promises = [];
                 for (let i = 0; i < question.answers.length; ++i) {
