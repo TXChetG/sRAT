@@ -10,12 +10,13 @@ const database = require('./database');
 (function () {
     'use strict';
 
-    var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
+    // var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
 
     const frontend_path = './frontend';
     const common_path = `${frontend_path}/common`;
 
-    const dashboard_root = '/' + randomid(16);
+    // const dashboard_root = '/' + randomid(16);
+    const dashboard_root = '/dashboard';
     console.log(`Dashboard Root: ${dashboard_root}`);
 
     var db = database.Database('srat.db', function (err) {
