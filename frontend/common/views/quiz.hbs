@@ -2,19 +2,63 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>{{quiz.name}}</title>
+	<title></title>
 	{{>css}}
 </head>
 <body>
-	<h1>{{quiz.name}}</h1>
-	<p>Just gonna try to load some data here.</p>
+	<h1 class="quiz__title"></h1>
+	<div class="question__container">
+		<div class="question">
+			<p class="question__statement"></p>
+			<div class="question__answers">
+				<p class="question__answer"></p>
+			</div>
+		</div>
+	</div>
 	<script>
+	const buildAnswers = function (id, answers){
+		answers[0].forEach((answer) => {
+			let qid = id;
+			let statement = answer.statement;
+			let aid = answer.answerid;
+			let answerTemplate = `<button class="question__answer" data-aid="${aid}">${statement}</button>`;
+			jQuery(`.question_${qid} > .question__answers`).append(answerTemplate);
+		});
+	};
+	const buildQuiz = function (data){
+		let title = data.name;
+		jQuery('.quiz__title').text(title);
+
+		// Print the questions and answers
+		let questions = data.questions;
+		questions.forEach((question) => {
+			let statement = question.statement;
+			let qid = question.questionid;
+			let questionTemplate = `<div class="question_${qid}">
+			<p class="question__statement">${statement}</p>
+			<div class="question__answers"></div>
+		</div>`;
+		$('.question__container').append(questionTemplate);
+		buildAnswers(qid, question.answers);
+		});
+	};
+	const getRequest = function () {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '{{dashboard_root}}/quizzes/{{quizid}}', true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send();
+		xhr.onload = function () {
+			var response = JSON.parse(this.responseText);
+			if (response.error) {
+				console.error(`something broked: ${response.error}`);
+			} else {
+				console.log(response);
+				buildQuiz(response);
+			}
+		};
+	};
 	jQuery(document).ready(function($) {
-		console.log(`{{quiz.questions}}`);
-		let questions = `{{quiz.questions}}`;
-		for (let question in questions){
-			console.log(questions[question]);
-		}
+		getRequest();
 	});
 	</script>
 </body>

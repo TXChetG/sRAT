@@ -76,10 +76,16 @@ const database = require('./database');
             } else if (row === undefined) {
                 res.send({'error': `cannot find quiz with quizid=${quizid}`});
             } else {
-                res.locals.quiz = row;
-                res.render('quiz.hbs');
+                res.send(row);
             }
         });
+    });
+
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res){
+        let quizid = req.params.quizid;
+        res.locals.quizid = quizid;
+        res.locals.dashboard_root = dashboard_root;
+        res.render('quiz.hbs');
     });
 
     app.use(dashboard_root, function (ignore, res) {
