@@ -11,36 +11,27 @@
 		</ul>		
 		<div class="dashboard__component">
 			<ul class="dashboard-quiz__list">
-				<li class="quiz">
-					<h3 class="quiz__title">Example Quiz Title</h3>
-					<ul class="quiz__control-container">
-						<li class="quiz__control"><a href="#">Results</a></li>
-						<li class="quiz__control"><a href="#">Open</a></li>
-						<li class="quiz__control"><a href="#">Edit</a></li>
-						<li class="quiz__control"><a href="#">Delete</a></li>
-					</ul>
-				</li>
-				<li class="quiz">
-					<h3 class="quiz__title">Example Quiz Title 2</h3>
-					<ul class="quiz__control-container">
-						<li class="quiz__control"><a href="#">Results</a></li>
-						<li class="quiz__control"><a href="#">Closed</a></li>
-						<li class="quiz__control"><a href="#">Edit</a></li>
-						<li class="quiz__control"><a href="#">Delete</a></li>
-					</ul>
-				</li>
-				<li class="quiz">
-					<h3 class="quiz__title">Example Quiz Title 3</h3>
-					<ul class="quiz__control-container">
-						<li class="quiz__control"><a href="#">Results</a></li>
-						<li class="quiz__control"><a href="#">Closed</a></li>
-						<li class="quiz__control"><a href="#">Edit</a></li>
-						<li class="quiz__control"><a href="#">Delete</a></li>
-					</ul>
-				</li>
 			</ul>
 		</div>
 		<script>
+			const buildQuizList = function (array){
+				array.forEach((quiz) => {
+					//console.log(quiz);
+					let id = quiz.quizid;
+					let name = quiz.name;
+					let quiz_row = `<li class="quiz">
+					<h3 class="quiz__title">${name}</h3>
+					<ul class="quiz__control-container">
+						<li class="quiz__control"><a href="${id}">Results</a></li>
+						<li class="quiz__control"><a href="${id}">Open</a></li>
+						<li class="quiz__control"><a href="${id}">Edit</a></li>
+						<li class="quiz__control"><a href="${id}">Delete</a></li>
+					</ul>
+				</li>`;
+				let quizList = jQuery('.dashboard-quiz__list');
+				quizList.append(quiz_row);
+			});
+			};
 			const getRequest = function () {
 				var xhr = new XMLHttpRequest();
 				xhr.open('GET', '{{dashboard_root}}/quizzes/list', true);
@@ -51,7 +42,7 @@
 					if (response.error) {
 						console.error(`something broked: ${response.error}`);
 					} else {
-						console.log(response);
+						buildQuizList(response);
 					}
 				};
 			};
