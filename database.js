@@ -5,8 +5,6 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports.Database = function (filename = 'srat.db', callback) {
-
-
     var db = new sqlite3.Database(filename, function (err) {
         if (err !== null) {
             return console.error(`cannot open database ${filename}: ${err}`);
@@ -111,23 +109,27 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, function (err, quiz) {
             if (err !== null) {
                 return callback(err);
-            }
-
-            quiz.questions = [];
-            new Promise(function (resolve, reject) {
-                get_questions(quizid, function (err, questions) {
-                    if (err !== null) {
-                        reject(err);
-                    } else {
-                        resolve(questions);
-                    }
+            } else if (quiz === undefined) {
+                return callback(null, quiz);
+            } else {
+                quiz.questions = [];
+                new Promise(function (resolve, reject) {
+                    get_questions(quizid, function (err, questions) {
+                        if (err !== null) {
+                            reject(err);
+                        } else if (questions === undefined) {
+                            resolve([]);
+                        } else {
+                            resolve(questions);
+                        }
+                    });
+                }).then(function (questions) {
+                    quiz.questions = questions;
+                    callback(null, quiz);
+                }).catch(function (err) {
+                    callback(err);
                 });
-            }).then(function (questions) {
-                quiz.questions = questions;
-                callback(null, quiz);
-            }).catch(function (err) {
-                callback(err);
-            });
+            }
         });
     };
 
@@ -135,30 +137,34 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         db.all('SELECT questionid, statement FROM questions WHERE quizid=?', quizid, function (err, questions) {
             if (err !== null) {
                 return callback(err);
-            }
-
-            let promises = [];
-            for (let i = 0; i < questions.length; ++i) {
-                let question = questions[i],
-                    questionid = question.questionid;
-                promises.push(new Promise(function (resolve, reject) {
-                    get_answers(quizid, questionid, function (err, answers) {
-                        if (err !== null) {
-                            reject(err);
-                        } else {
-                            resolve(answers);
-                        }
-                    });
-                }));
-            }
-            Promise.all(promises).then(function(all_answers) {
+            } else if (questions === undefined) {
+                return callback(null, questions);
+            } else {
+                let promises = [];
                 for (let i = 0; i < questions.length; ++i) {
-                    questions[i].answers = all_answers[i];
+                    let question = questions[i],
+                        questionid = question.questionid;
+                    promises.push(new Promise(function (resolve, reject) {
+                        get_answers(quizid, questionid, function (err, answers) {
+                            if (err !== null) {
+                                reject(err);
+                            } else if (answers === undefined) {
+                                resolve([]);
+                            } else {
+                                resolve(answers);
+                            }
+                        });
+                    }));
                 }
-                callback(null, questions);
-            }).catch(function (err) {
-                callback(err, null);
-            });
+                Promise.all(promises).then(function(all_answers) {
+                    for (let i = 0; i < questions.length; ++i) {
+                        questions[i].answers = all_answers[i];
+                    }
+                    callback(null, questions);
+                }).catch(function (err) {
+                    callback(err, null);
+                });
+            }
         });
     };
 
