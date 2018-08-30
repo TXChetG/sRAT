@@ -169,12 +169,28 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         stmt.finalize();
     };
 
+    var check_answer = function (quizid, questionid, answer, callback) {
+        db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function (err, response) {
+            if (err !== null) {
+                return callback(err);
+            } else {
+                callback(err, {
+                    quizid: quizid,
+                    questionid: questionid,
+                    proposed: answer.proposed,
+                    iscorrect: answer.proposed == response.correct
+                });
+            }
+        });
+    };
+
     return {
         handle: db,
         close: close,
 
         list_quizzes,
         add_quiz,
-        get_quiz
+        get_quiz,
+        check_answer
     };
 };
