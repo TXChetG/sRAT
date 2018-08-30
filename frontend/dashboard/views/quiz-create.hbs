@@ -102,7 +102,7 @@
 			xhr.onload = function () {
 				var response = JSON.parse(this.responseText);
 				if (response.error) {
-					console.error(`something broked: ${response.error}`);
+					console.error(response.error);
 				} else {
 					console.log(response);
 					dashboard_redirect();

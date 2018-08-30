@@ -18,7 +18,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
 
         db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER, quizid INTEGER, statement TEXT, correct INTEGER, PRIMARY KEY (questionid, quizid))', callback);
 
-        db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid))', callback);
+        db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid, quizid))', callback);
 
         db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY)', callback);
     });
@@ -75,7 +75,6 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                 return callback(err);
             }
 
-            let questionid = this.lastID;
             if ('answers' in question && question.answers.constructor === Array) {
                 let promises = [];
                 for (let i = 0; i < question.answers.length; ++i) {
