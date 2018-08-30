@@ -154,7 +154,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
             }
             Promise.all(promises).then(function(all_answers) {
                 for (let i = 0; i < questions.length; ++i) {
-                    questions[i].answers = all_answers;
+                    questions[i].answers = all_answers[i];
                 }
                 callback(null, questions);
             }).catch(function (err) {
