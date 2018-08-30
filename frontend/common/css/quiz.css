@@ -3,6 +3,7 @@ body {
 	font-size: 1.25em;
 	background-color: #efefef;
 	margin: 1em;
+	counter-reset: question;
 }
 .quiz__title {
 	font-family: 'Merriweather', serif;
@@ -16,8 +17,20 @@ body {
 
 .question {
   margin: 0 1em;
-  padding: .5em;
-  min-width: 33vw;
+  width: 100%;
+  background-color: #FFFFFF;
+  border: 1px solid #CCCCCC;
+}
+
+.question::before {
+	counter-increment: question;                 
+  content: counter(question);
+  background-color: #CCCCCC;
+  font-family: 'Merriweather', serif;
+  font-size: 3em;
+  float: left;
+  padding: 2rem 1.5rem;
+  margin-right: .5em;
 }
 
 .question__answer {

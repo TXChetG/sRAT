@@ -22,15 +22,15 @@
 				console.error(`something broked: ${response.error}`);
 			} else {
 				if (response.iscorrect){
-					button.css('background-color','green');
+					button.css('background-color','#3D9970');
 				} else {
-					button.css('background-color','red');
+					button.css('background-color','#FF4136');
 				}
 			}
 		};
 	};
 	const buildAnswers = function (id, answers){
-		answers[0].forEach((answer) => {
+		answers.forEach((answer) => {
 			let qid = id;
 			let statement = answer.statement;
 			let aid = answer.answerid;
