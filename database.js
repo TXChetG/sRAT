@@ -5,7 +5,7 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports.Database = function (filename = 'srat.db', callback) {
-    'use strict';
+    
 
     var db = new sqlite3.Database(filename, function (err) {
         if (err !== null) {

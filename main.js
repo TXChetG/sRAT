@@ -69,6 +69,7 @@ const database = require('./database');
     });
 
     app.use(dashboard_root, function (ignore, res) {
+        res.locals.dashboard_root = dashboard_root;
         res.render('dashboard.hbs');
     });
 
