@@ -68,6 +68,19 @@ const database = require('./database');
         res.render('quiz-create.hbs');
     });
 
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)', function (req, res) {
+        let quizid = req.params.quizid;
+        db.get_quiz(quizid, function (err, row) {
+            if (err !== null) {
+                res.send({'error': err});
+            } else if (row === undefined) {
+                res.send({'error': `cannot find quiz with quizid=${quizid}`});
+            } else {
+                res.send(row);
+            }
+        });
+    });
+
     app.use(dashboard_root, function (ignore, res) {
         res.locals.dashboard_root = dashboard_root;
         res.render('dashboard.hbs');
