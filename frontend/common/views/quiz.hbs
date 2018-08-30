@@ -16,6 +16,20 @@
 		</div>
 	</div>
 	<script>
+		const checkAnswer = function(qid){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', '{{dashboard_root}}/quizzes/{{quizid}}/' + qid + '/check', true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send();
+		xhr.onload = function () {
+			var response = JSON.parse(this.responseText);
+			if (response.error) {
+				console.error(`something broked: ${response.error}`);
+			} else {
+				console.log(response);
+			}
+		};
+	};
 	const buildAnswers = function (id, answers){
 		answers[0].forEach((answer) => {
 			let qid = id;
@@ -24,6 +38,10 @@
 			let answerTemplate = `<button class="question__answer" data-aid="${aid}">${statement}</button>`;
 			jQuery(`.question_${qid} > .question__answers`).append(answerTemplate);
 		});
+		jQuery('.question__answer').click(function(e){
+			let qid = $(this).parents('question').attr('data-qid');
+			checkAnswer(qid);
+		});		
 	};
 	const buildQuiz = function (data){
 		let title = data.name;
@@ -34,7 +52,7 @@
 		questions.forEach((question) => {
 			let statement = question.statement;
 			let qid = question.questionid;
-			let questionTemplate = `<div class="question_${qid}">
+			let questionTemplate = `<div class="question question_${qid}" data-qid="${qid}">
 			<p class="question__statement">${statement}</p>
 			<div class="question__answers"></div>
 		</div>`;
@@ -54,11 +72,15 @@
 			} else {
 				console.log(response);
 				buildQuiz(response);
+				return true;
 			}
 		};
 	};
 	jQuery(document).ready(function($) {
 		getRequest();
+
+		
+
 	});
 	</script>
 </body>
