@@ -1,0 +1,27 @@
+body {
+	font-family: 'Oxygen', sans-serif;
+	font-size: 1.25em;
+	background-color: #efefef;
+	margin: 1em;
+}
+.quiz__title {
+	font-family: 'Merriweather', serif;
+}
+
+.question__container {
+	display: flex;
+	width: 80vw;
+	margin: 0 auto;
+}
+
+.question {
+  margin: 0 1em;
+  padding: .5em;
+  min-width: 33vw;
+}
+
+.question__answer {
+  margin: 0 .5em;
+  font-size: 1.25em;
+  width: 100px;
+}
