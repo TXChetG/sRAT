@@ -105,9 +105,16 @@
 					console.error(`something broked: ${response.error}`);
 				} else {
 					console.log(response);
-					return response;
+					dashboard_redirect();
 				}
 			};
+		};
+		
+		const dashboard_redirect = function () {
+			let current_url = window.location.href,
+				elements = current_url.split('/'),
+				redirect_path = elements.splice(0, elements.length - 2).join('/');
+			window.location = redirect_path;
 		};
 
 		$('.new_quiz').submit((e) => {
