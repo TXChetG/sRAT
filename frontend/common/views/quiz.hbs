@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{{quiz.name}}</title>
+	{{>css}}
+</head>
+<body>
+	<h1>{{quiz.name}}</h1>
+	<p>Just gonna try to load some data here.</p>
+	<script>
+	jQuery(document).ready(function($) {
+		console.log(`{{quiz.questions}}`);
+		let questions = `{{quiz.questions}}`;
+		for (let question in questions){
+			console.log(questions[question]);
+		}
+	});
+	</script>
+</body>
+</html>

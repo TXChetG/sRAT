@@ -76,7 +76,8 @@ const database = require('./database');
             } else if (row === undefined) {
                 res.send({'error': `cannot find quiz with quizid=${quizid}`});
             } else {
-                res.send(row);
+                res.locals.quiz = row;
+                res.render('quiz.hbs');
             }
         });
     });
