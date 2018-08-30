@@ -16,7 +16,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
     db.serialize(function () {
         db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT)', callback);
 
-        db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER PRIMARY KEY, quizid INTEGER, statement TEXT, correct INTEGER)', callback);
+        db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER, quizid INTEGER, statement TEXT, correct INTEGER, PRIMARY KEY (questionid, quizid))', callback);
 
         db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid))', callback);
 
@@ -45,9 +45,10 @@ module.exports.Database = function (filename = 'srat.db', callback) {
             if ('questions' in quiz && quiz.questions.constructor === Array) {
                 let promises = [];
                 for (let i = 0; i < quiz.questions.length; ++i) {
-                    let question = quiz.questions[i];
+                    let question = quiz.questions[i],
+                        questionid = i + 1;
                     promises.push(new Promise(function (resolve, reject) {
-                        add_question(quizid, question, function (err) {
+                        add_question(quizid, questionid, question, function (err) {
                             if (err !== null) {
                                 reject(err);
                             } else {
@@ -67,9 +68,9 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         });
     };
 
-    var add_question = function (quizid, question, callback) {
-        let stmt = db.prepare('INSERT INTO questions (quizid, statement, correct) VALUES (?, ?, ?)');
-        stmt.run(quizid, question.statement, question.correct, function (err) {
+    var add_question = function (quizid, questionid, question, callback) {
+        let stmt = db.prepare('INSERT INTO questions (questionid, quizid, statement, correct) VALUES (?, ?, ?, ?)');
+        stmt.run(questionid, quizid, question.statement, question.correct, function (err) {
             if (err !== null) {
                 return callback(err);
             }
@@ -168,12 +169,28 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         stmt.finalize();
     };
 
+    var check_answer = function (quizid, questionid, answer, callback) {
+        db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function (err, response) {
+            if (err !== null) {
+                return callback(err);
+            } else {
+                callback(err, {
+                    quizid: quizid,
+                    questionid: questionid,
+                    proposed: answer.proposed,
+                    iscorrect: answer.proposed == response.correct
+                });
+            }
+        });
+    };
+
     return {
         handle: db,
         close: close,
 
         list_quizzes,
         add_quiz,
-        get_quiz
+        get_quiz,
+        check_answer
     };
 };

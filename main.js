@@ -68,6 +68,18 @@ const database = require('./database');
         res.render('quiz-create.hbs');
     });
 
+    app.post(dashboard_root + '/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function (req, res) {
+        let quizid = req.params.quizid,
+            questionid = req.params.questionid;
+        db.check_answer(quizid, questionid, req.body, function (err, result) {
+            if (err !== null) {
+                res.send({'error': err});
+            } else {
+                res.send(result);
+            }
+        });
+    });
+
     app.get(dashboard_root + '/quizzes/:quizid(\\d+)', function (req, res) {
         let quizid = req.params.quizid;
         db.get_quiz(quizid, function (err, row) {
