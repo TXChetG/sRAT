@@ -5,7 +5,7 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports.Database = function (filename = 'srat.db', callback) {
-    
+
 
     var db = new sqlite3.Database(filename, function (err) {
         if (err !== null) {
@@ -48,7 +48,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                     let question = quiz.questions[i];
                     promises.push(new Promise(function (resolve, reject) {
                         add_question(quizid, question, function (err) {
-                            if (err != null) {
+                            if (err !== null) {
                                 reject(err);
                             } else {
                                 resolve();
@@ -108,7 +108,64 @@ module.exports.Database = function (filename = 'srat.db', callback) {
     }
 
     var get_quiz = function (quizid, callback) {
-        return db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, callback);
+        db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, function (err, quiz) {
+            if (err !== null) {
+                return callback(err);
+            }
+
+            quiz.questions = [];
+            new Promise(function (resolve, reject) {
+                get_questions(quizid, function (err, questions) {
+                    if (err !== null) {
+                        reject(err);
+                    } else {
+                        resolve(questions);
+                    }
+                });
+            }).then(function (questions) {
+                quiz.questions = questions;
+                callback(null, quiz);
+            }).catch(function (err) {
+                callback(err);
+            });
+        });
+    };
+
+    var get_questions = function(quizid, callback) {
+        db.all('SELECT questionid, statement FROM questions WHERE quizid=?', quizid, function (err, questions) {
+            if (err !== null) {
+                return callback(err);
+            }
+
+            let promises = [];
+            for (let i = 0; i < questions.length; ++i) {
+                let question = questions[i],
+                    questionid = question.questionid;
+                promises.push(new Promise(function (resolve, reject) {
+                    get_answers(quizid, questionid, function (err, answers) {
+                        if (err !== null) {
+                            reject(err);
+                        } else {
+                            resolve(answers);
+                        }
+                    });
+                }));
+            }
+            Promise.all(promises).then(function(all_answers) {
+                for (let i = 0; i < questions.length; ++i) {
+                    questions[i].answers = all_answers;
+                }
+                callback(null, questions);
+            }).catch(function (err) {
+                callback(err, null);
+            });
+        });
+    };
+
+    var get_answers = function(quizid, questionid, callback) {
+        let stmt = db.prepare('SELECT answerid, statement FROM answers WHERE quizid=? AND questionid=?');
+        stmt.all(quizid, questionid, callback);
+        stmt.finalize();
     };
 
     return {
