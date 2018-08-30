@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title></title>
 	{{>css}}
+	<link rel="stylesheet" href="/common/css/quiz.css" class="css">
 </head>
 <body>
 	<h1 class="quiz__title"></h1>
@@ -50,6 +51,7 @@
 		// Print the questions and answers
 		let questions = data.questions;
 		questions.forEach((question) => {
+			console.log(question);
 			let statement = question.statement;
 			let qid = question.questionid;
 			let questionTemplate = `<div class="question question_${qid}" data-qid="${qid}">
