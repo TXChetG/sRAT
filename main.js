@@ -33,8 +33,7 @@ const database = require('./database');
     const frontend_path = './frontend';
     const common_path = `${frontend_path}/common`;
 
-    // const dashboard_root = '/' + randomid(16);
-    const dashboard_root = '/dashboard';
+    const dashboard_root = '/' + randomid(16);
     console.log(`Dashboard Root: ${dashboard_root}`);
 
     var db = database.Database('srat.db', function (err) {
