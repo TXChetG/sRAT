@@ -36,13 +36,24 @@
 			};
 
 			const deactivateQuiz = function (qid){
-				console.log('quiz deactivation is not yet implemented');
-				let link = $(`.open_quiz[data-qid='${qid}']`);
-				link.off('click').on('click', function (e) {
-					let qid = $(this).attr('data-qid');
-					activateQuiz(qid);
-				});
-				link.html('Open');
+				var xhr = new XMLHttpRequest();
+				xhr.open('PUT', `{{dashboard_root}}/quizzes/${qid}/close`, true);
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.send(JSON.stringify({'qid': qid}));
+				xhr.onload = function () {
+					var response = JSON.parse(this.responseText);
+					if (response.error) {
+						console.error(`something broked: ${response.error}`);
+					} else {
+						console.log(response);
+						let link = $(`.open_quiz[data-qid='${qid}']`);
+						link.off('click').on('click', function (e) {
+							let qid = $(this).attr('data-qid');
+							activateQuiz(qid);
+						});
+						link.html('Open');
+					}
+				};
 			};
 
 			const buildQuizList = function (array){
