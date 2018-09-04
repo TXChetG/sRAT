@@ -15,7 +15,7 @@ const database = require('./database');
         let active = new Int32Array(buffer);
         active[0] = -1;
 
-        let activate = (quizid) => return Atomics.store(active, 0, quizid);
+        let activate = (quizid) => {return Atomics.store(active, 0, quizid)};
         let deactivate = () => Atomics.store(active, 0, -1);
         let getid = () => Atomics.load(active, 0);
 
@@ -135,7 +135,10 @@ const database = require('./database');
                 });
             }
         });
+    });
 
+    app.get(dashboard_root + '/teams/new', function(ignore, res){
+        res.render('teams__add.hbs');
     });
 
     app.use(dashboard_root, function (ignore, res) {

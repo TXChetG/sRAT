@@ -10,6 +10,9 @@
 		<label>Team Name: <input type="text" name="team_name"></label>
 		<input type="submit" class="dashboard__button submit_team" value="Add Team">
 	</form>
+	<div class="team__code nonexistent">
+		<p>Write this code down. There's no where else to get it right now, and you need it.</p>
+	</div>
 	<script>
 		jQuery(document).ready(function($) {
 			const formToJSON = elements => [].reduce.call(elements, (data, element) => {
@@ -28,8 +31,13 @@
 					if (response.error) {
 						console.error(response.error);
 					} else {
-						console.log(response);
-						//showTeamId(response);
+						console.log(response.teamcode);
+						const showTeamId = (response) => {
+							let teamcode = response.teamcode;
+							$('.team__code').append(`<p>${teamcode}</p>`).removeClass('nonexistent');
+
+						};
+						showTeamId(response);
 					}
 				};
 			};
@@ -42,6 +50,10 @@
 				}
 				sendRequest(api_data);
 			};
+
+			$('.add_team').submit(function(e) {
+				handleFormSubmit(e);
+			});
 		});
 	</script>
 </body>
