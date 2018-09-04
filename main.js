@@ -112,12 +112,27 @@ const database = require('./database');
         });
     });
 
-    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res) {
-        let quizid = req.params.quizid;
-        active_quiz.activate(quizid);
-        res.locals.quizid = quizid;
-        res.locals.dashboard_root = dashboard_root;
-        res.render('quiz.hbs');
+    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/open', function (req, res) {
+        let quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        if (active !== -1) {
+            if (quizid != active) {
+                res.send({'error': `quiz ${active} is already open`});
+            } else {
+                res.send({'quizid': active});
+            }
+        } else {
+            db.get_quiz(quizid, function (err, row) {
+                if (err !== null) {
+                    res.send({'error': err});
+                } else if (row === undefined) {
+                    res.send({'error': `cannot open quiz with quizid=${quizid}`});
+                } else {
+                    res.send({'quizid': active_quiz.activate(quizid)});
+                }
+            });
+        }
     });
 
     app.put(dashboard_root + '/teams/new', function (req, res) {
