@@ -18,7 +18,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
 
         db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid, quizid))', callback);
 
-        db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY)', callback);
+        db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY, name TEXT, teamcode TEXT)', callback);
     });
 
     var close = function () {
@@ -189,6 +189,24 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         });
     };
 
+    var add_team = function (team, callback) {
+        db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function (err) {
+            if (err !== null) {
+                return callback(err);
+            }
+            callback(err, this.lastID);
+        })
+    };
+
+    var get_team = function (teamid, callback) {
+        db.get('SELECT * FROM teams WHERE teamid=?', teamid, function (err, response) {
+            if (err !== null) {
+                return callback(err, null);
+            }
+            return callback(err, response);
+        });
+    };
+
     return {
         handle: db,
         close: close,
@@ -196,6 +214,8 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         list_quizzes,
         add_quiz,
         get_quiz,
-        check_answer
+        check_answer,
+        add_team,
+        get_team
     };
 };
