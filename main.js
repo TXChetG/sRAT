@@ -10,7 +10,7 @@ const database = require('./database');
 (function () {
     'use strict';
 
-    // var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
+    var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
 
     const frontend_path = './frontend';
     const common_path = `${frontend_path}/common`;
@@ -94,11 +94,29 @@ const database = require('./database');
         });
     });
 
-    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res){
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res) {
         let quizid = req.params.quizid;
         res.locals.quizid = quizid;
         res.locals.dashboard_root = dashboard_root;
         res.render('quiz.hbs');
+    });
+
+    app.put(dashboard_root + '/teams/new', function (req, res) {
+        req.body.teamcode = randomid(16);
+        db.add_team(req.body, function (err, teamid) {
+            if (err !== null) {
+                res.send({'error': err});
+            } else {
+                db.get_team(teamid, function (err, row) {
+                    if (err !== null) {
+                        res.send({'error': err});
+                    } else {
+                        res.send(row);
+                    }
+                });
+            }
+        });
+
     });
 
     app.use(dashboard_root, function (ignore, res) {
