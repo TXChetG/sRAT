@@ -17,12 +17,14 @@ const database = require('./database');
 
         let activate = (quizid) => Atomics.store(active, 0, quizid);
         let deactivate = () => Atomics.store(active, 0, -1);
+        let isactive = () => (Atomics.load(active, 0) === -1);
         let getid = () => Atomics.load(active, 0);
 
         return {
             activate: activate,
             deactivate: deactivate,
-            getid: getid
+            getid: getid,
+            isactive: isactive
         };
     };
 
@@ -151,7 +153,7 @@ const database = require('./database');
                     res.send({'error': `cannot close quiz with quizid=${quizid}`});
                 } else {
                     active_quiz.deactivate();
-                    res.send({'closed': active_quiz.getid() === -1});
+                    res.send({'closed': active_quiz.isactive()});
                 }
             });
         }
