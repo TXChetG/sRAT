@@ -36,8 +36,11 @@ body {
   min-width: 100px;
 }
 
+.question__answers {
+    margin-left: 178px;
+}
+
 .question__answer {
-  margin: 0 .5em;
+  margin: .25em .5em;
   font-size: 1.25em;
-  width: 100px;
 }
