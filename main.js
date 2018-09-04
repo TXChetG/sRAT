@@ -138,6 +138,7 @@ const database = require('./database');
     });
 
     app.get(dashboard_root + '/teams/new', function(ignore, res){
+        res.locals.dashboard_root = dashboard_root;
         res.render('teams__add.hbs');
     });
 
