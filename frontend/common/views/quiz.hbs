@@ -20,8 +20,9 @@
 		xhr.onload = function () {
 			var response = JSON.parse(this.responseText);
 			if (response.error) {
-				console.error(`something broked: ${response.error}`);
+				console.error(response.error);
 			} else {
+				console.log(response);
 				if (response.iscorrect){
 					button.css('background-color','#3D9970');
 					$(`.question__answer[data-qid='${qid}']`).prop('disabled', true);
@@ -38,12 +39,11 @@
 			let aid = answer.answerid;
 			let answerTemplate = `<button class="question__answer" data-qid="${qid}" data-aid="${aid}">${statement}</button>`;
 			jQuery(`.question_${qid} > .question__answers`).append(answerTemplate);
+			jQuery(`.question__answer[data-qid='${qid}'][data-aid='${aid}']`).click(function(e){
+				console.log(`clicked on ${qid}, ${aid}`);
+				checkAnswer(qid, aid, $(this));
+			});
 		});
-		jQuery('.question__answer').click(function(e){
-			let qid = $(this).attr('data-qid');
-			let aid = $(this).attr('data-aid');
-			checkAnswer(qid, aid, $(this));
-		});		
 	};
 	const buildQuiz = function (data){
 		let title = data.name;
@@ -55,11 +55,11 @@
 			let statement = question.statement;
 			let qid = question.questionid;
 			let questionTemplate = `<div class="question question_${qid}" data-qid="${qid}">
-			<p class="question__statement">${statement}</p>
-			<div class="question__answers"></div>
-		</div>`;
-		$('.question__container').append(questionTemplate);
-		buildAnswers(qid, question.answers);
+				<p class="question__statement">${statement}</p>
+				<div class="question__answers"></div>
+			</div>`;
+			$('.question__container').append(questionTemplate);
+			buildAnswers(qid, question.answers);
 		});
 	};
 	const getRequest = function () {

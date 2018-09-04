@@ -176,10 +176,16 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         stmt.finalize();
     };
 
+    var count_answers = function (quizid, questionid, callback) {
+        db.get('SELECT COUNT(*) AS count FROM answers WHERE quizid=? AND questionid=?', quizid, questionid, callback);
+    };
+
     var check_answer = function (quizid, questionid, answer, callback) {
         db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function (err, response) {
             if (err !== null) {
-                return callback(err);
+                callback(err);
+            } else if (response === undefined) {
+                callback(null, response);
             } else {
                 callback(err, {
                     quizid: quizid,
@@ -213,6 +219,39 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         db.get('SELECT * FROM teams WHERE teamcode=?', teamcode, callback);
     };
 
+    var save_response = function (team, result, callback) {
+        count_answers(result.quizid, result.questionid, function (err, answers) {
+            if (err !== null) {
+                return callback(err);
+            } else if (answers === undefined) {
+                return callback({'error': `no answers for quiz ${quizid}, question ${questionid} found`});
+            }
+
+            let query = 'SELECT COUNT(*) AS count, MIN(score) AS score FROM responses WHERE teamid=? AND quizid=? AND questionid=?';
+            db.get(query, team.teamid, result.quizid, result.questionid, function (err, response) {
+                let score = 1.0;
+                if (err !== null) {
+                    return callback(err);
+                } else if (response.score === null) {
+                    score = result.iscorrect ? score : score/2.0;
+                } else {
+                    score = result.iscorrect ? response.score : response.score/2.0;
+                }
+                if (response.count >= (answers.count - 1)) {
+                    score = 0.0;
+                }
+
+                let query = 'INSERT INTO responses(teamid, quizid, questionid, response, iscorrect, score) VALUES (?, ?, ?, ?, ?, ?)';
+                db.run(query, team.teamid, result.quizid, result.questionid, result.response, result.iscorrect, score, function (err) {
+                    if (err !== null) {
+                        return callback(err);
+                    }
+                    callback(null, Object.assign({}, team, result, {score: score}));
+                });
+            });
+        });
+    };
+
     return {
         handle: db,
         close: close,
@@ -223,6 +262,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         check_answer,
         add_team,
         get_team_by_id,
-        get_team_by_code
+        get_team_by_code,
+        save_response
     };
 };

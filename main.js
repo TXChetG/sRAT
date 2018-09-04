@@ -95,6 +95,8 @@ const database = require('./database');
         db.check_answer(quizid, questionid, req.body, function (err, result) {
             if (err !== null) {
                 res.send({'error': err});
+            } else if (result === undefined) {
+                res.send({'error': `quiz ${quizid}, question ${questionid} does not exist`});
             } else {
                 res.send(result);
             }
@@ -185,13 +187,32 @@ const database = require('./database');
     });
 
     app.post('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function (req, res) {
-        let quizid = req.params.quizid,
+        let teamcode = req.params.teamcode,
+            quizid = req.params.quizid,
             questionid = req.params.questionid;
-        db.check_answer(quizid, questionid, req.body, function (err, result) {
+        db.get_team_by_code(teamcode, function (err, team) {
             if (err !== null) {
                 res.send({'error': err});
+            } else if (team === undefined) {
+                res.send({'error': `team ${teamcode} does not exist`})
             } else {
-                res.send(result);
+                db.check_answer(quizid, questionid, req.body, function (err, result) {
+                    if (err !== null) {
+                        res.send({'error': err});
+                    } else if (result === undefined) {
+                        res.send({'error': `quiz ${quizid}, question ${questionid} does not exist`});
+                    } else {
+                        db.save_response(team, result, function (err, result) {
+                            if (err !== null) {
+                                res.send({'error': err});
+                            } else if (result === undefined) {
+                                res.send({'error': 'could not save response for unknown reasons'});
+                            } else {
+                                res.send(result);
+                            }
+                        });
+                    }
+                });
             }
         });
     });
