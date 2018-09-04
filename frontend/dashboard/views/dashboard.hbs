@@ -25,11 +25,24 @@
 					if (response.error) {
 						console.error(`something broked: ${response.error}`);
 					} else {
-						console.log(response);
-						let activeQuizActivateLink = $('.open_quiz').find(`[data-qid='${qid}']`);
-						//activeQuizActivateLink[0].html('Closed');
+						let link = $(`.open_quiz[data-qid='${qid}']`);
+						link.off('click').on('click', function (e) {
+							let qid = $(this).attr('data-qid');
+							deactivateQuiz(qid);
+						});
+						link.html('Close');
 					}
 				};
+			};
+			
+			const deactivateQuiz = function (qid){
+				console.log('quiz deactivation is not yet implemented');
+				let link = $(`.open_quiz[data-qid='${qid}']`);
+				link.off('click').on('click', function (e) {
+					let qid = $(this).attr('data-qid');
+					activateQuiz(qid);
+				});
+				link.html('Open');
 			};
 
 			const buildQuizList = function (array){
