@@ -198,13 +198,17 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         })
     };
 
-    var get_team = function (teamid, callback) {
+    var get_team_by_id = function (teamid, callback) {
         db.get('SELECT * FROM teams WHERE teamid=?', teamid, function (err, response) {
             if (err !== null) {
                 return callback(err, null);
             }
             return callback(err, response);
         });
+    };
+
+    var get_team_by_code = function (teamcode, callback) {
+        db.get('SELECT * FROM teams WHERE teamcode=?', teamcode, callback);
     };
 
     return {
@@ -216,6 +220,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         get_quiz,
         check_answer,
         add_team,
-        get_team
+        get_team_by_id,
+        get_team_by_code
     };
 };

@@ -141,7 +141,7 @@ const database = require('./database');
             if (err !== null) {
                 res.send({'error': err});
             } else {
-                db.get_team(teamid, function (err, row) {
+                db.get_team_by_id(teamid, function (err, row) {
                     if (err !== null) {
                         res.send({'error': err});
                     } else {
@@ -160,6 +160,70 @@ const database = require('./database');
     app.use(dashboard_root, function (ignore, res) {
         res.locals.dashboard_root = dashboard_root;
         res.render('dashboard.hbs');
+    });
+
+    app.post('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function (req, res) {
+        let quizid = req.params.quizid,
+            questionid = req.params.questionid;
+        db.check_answer(quizid, questionid, req.body, function (err, result) {
+            if (err !== null) {
+                res.send({'error': err});
+            } else {
+                res.send(result);
+            }
+        });
+    });
+
+    app.get('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)', function (req, res) {
+        let teamcode = req.params.teamcode,
+            quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            res.send({'error': 'no quiz is open'});
+        } else if (quizid != active) {
+            res.send({'error': `quiz ${quizid} is not active`});
+        } else {
+            db.get_team_by_code(teamcode, function (err, row) {
+                if (err !== null) {
+                    res.send(err);
+                } else if (row === undefined) {
+                    res.send({'error': `team ${teamcode} does not exist`});
+                } else {
+                    db.get_quiz(quizid, function (err, row) {
+                        if (err !== null) {
+                            res.send({'error': err});
+                        } else if (row === undefined) {
+                            res.send({'error': `quiz ${quizid} does not exist`});
+                        } else {
+                            res.send(row);
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+
+    app.get('/:teamcode([\\da-f]+)', function (req, res) {
+        let teamcode = req.params.teamcode,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            return res.redirect('lost.html');
+        }
+
+        db.get_team_by_code(teamcode, function (err, row) {
+            if (err !== null) {
+                res.redirect('lost.html');
+            } else if (row === undefined) {
+                res.redirect('lost.html');
+            } else {
+                res.locals.teamcode = teamcode;
+                res.locals.quizid = active;
+                res.render('quiz.hbs');
+            }
+        });
     });
 
     app.get('/new', function (ignore, res) {
