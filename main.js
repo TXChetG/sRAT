@@ -141,10 +141,8 @@ const database = require('./database');
         let quizid = req.params.quizid,
             active = active_quiz.getid();
 
-        if (active === -1) {
+        if (active === -1 || quizid != active) {
             res.send({'closed': true});
-        } else if (quizid != active) {
-            res.send({'error': `quiz ${quizid} is not open`});
         } else {
             db.get_quiz(quizid, function (err, row) {
                 if (err !== null) {
