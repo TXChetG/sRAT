@@ -14,7 +14,7 @@
 	const checkAnswer = function(qid, aid, button){
 		let postData = {proposed: aid};
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '{{teamcode}}/quizzes/{{quizid}}/' + qid + '/check', true);
+		xhr.open('POST', '/{{teamcode}}/quizzes/{{quizid}}/' + qid + '/check', true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(JSON.stringify(postData));
 		xhr.onload = function () {
