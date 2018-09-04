@@ -135,6 +135,28 @@ const database = require('./database');
         }
     });
 
+    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/close', function (req, res) {
+        let quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            res.send({'closed': true});
+        } else if (quizid != active) {
+            res.send({'error': `quiz ${quizid} is not open`});
+        } else {
+            db.get_quiz(quizid, function (err, row) {
+                if (err !== null) {
+                    res.send({'error': err});
+                } else if (row === undefined) {
+                    res.send({'error': `cannot close quiz with quizid=${quizid}`});
+                } else {
+                    active_quiz.deactivate();
+                    res.send({'closed': active_quiz.getid() === -1});
+                }
+            });
+        }
+    });
+
     app.put(dashboard_root + '/teams/new', function (req, res) {
         req.body.teamcode = randomid(16);
         db.add_team(req.body, function (err, teamid) {
