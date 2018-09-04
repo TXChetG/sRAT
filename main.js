@@ -15,7 +15,7 @@ const database = require('./database');
         let active = new Int32Array(buffer);
         active[0] = -1;
 
-        let activate = (quizid) => {return Atomics.store(active, 0, quizid)};
+        let activate = (quizid) => Atomics.store(active, 0, quizid);
         let deactivate = () => Atomics.store(active, 0, -1);
         let getid = () => Atomics.load(active, 0);
 
