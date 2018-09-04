@@ -24,7 +24,7 @@
 			}, {});
 			const sendRequest = data => {
 				var xhr = new XMLHttpRequest();
-				xhr.open('PUT', '/dashboard/teams/new', true);
+				xhr.open('PUT', '{{dashboard_root}}/teams/new', true);
 				xhr.setRequestHeader('Content-Type', 'application/json');
 				xhr.send(JSON.stringify(data));
 				xhr.onload = function () {
