@@ -17,7 +17,7 @@
 		<script>
 			const activateQuiz = function (qid){
 				var xhr = new XMLHttpRequest();
-				xhr.open('PUT', '`{{dashboard_root}}/quizzes/${qid}/open`', true);
+				xhr.open('PUT', `{{dashboard_root}}/quizzes/${qid}/open`, true);
 				xhr.setRequestHeader('Content-Type', 'application/json');
 				xhr.send(JSON.stringify({'qid': qid}));
 				xhr.onload = function () {
@@ -27,7 +27,7 @@
 					} else {
 						console.log(response);
 						let activeQuizActivateLink = $('.open_quiz').find(`[data-qid='${qid}']`);
-						activeQuizActivateLink.html('Closed');
+						//activeQuizActivateLink[0].html('Closed');
 					}
 				};
 			};
