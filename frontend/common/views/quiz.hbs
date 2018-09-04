@@ -24,6 +24,7 @@
 			} else {
 				if (response.iscorrect){
 					button.css('background-color','#3D9970');
+					$(`.question__answer[data-qid='${qid}']`).prop('disabled', true);
 				} else {
 					button.css('background-color','#FF4136');
 				}
