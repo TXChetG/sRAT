@@ -19,6 +19,8 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         db.run('CREATE TABLE IF NOT EXISTS answers (answerid INTEGER NOT NULL, questionid INTEGER NOT NULL, quizid INTEGER, statement TEXT, PRIMARY KEY (answerid, questionid, quizid))', callback);
 
         db.run('CREATE TABLE IF NOT EXISTS teams (teamid INTEGER PRIMARY KEY, name TEXT, teamcode TEXT)', callback);
+
+        db.run('CREATE TABLE IF NOT EXISTS responses (responseid INTEGER, teamid INTEGER, questionid INTEGER, quizid INTEGER, response INTEGER, iscorrect INTEGER, score REAL, PRIMARY KEY (responseid, teamid, questionid, quizid))', callback);
     });
 
     var close = function () {
