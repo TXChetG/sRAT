@@ -274,10 +274,6 @@ const database = require('./database');
         });
     });
 
-    app.get('/new', function (ignore, res) {
-        res.redirect(dashboard_root + '/quizzes/new');
-    });
-
     app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
