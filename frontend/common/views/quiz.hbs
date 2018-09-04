@@ -14,7 +14,7 @@
 	const checkAnswer = function(qid, aid, button){
 		let postData = {proposed: aid};
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/{{teamcode}}/quizzes/{{quizid}}/' + qid + '/check', true);
+		xhr.open('POST', '{{teamcode}}/quizzes/{{quizid}}/' + qid + '/check', true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(JSON.stringify(postData));
 		xhr.onload = function () {
@@ -22,7 +22,6 @@
 			if (response.error) {
 				console.error(response.error);
 			} else {
-				console.log(response);
 				if (response.iscorrect){
 					button.css('background-color','#3D9970');
 					$(`.question__answer[data-qid='${qid}']`).prop('disabled', true);
@@ -32,6 +31,7 @@
 			}
 		};
 	};
+
 	const buildAnswers = function (id, answers){
 		answers.forEach((answer) => {
 			let qid = id;
@@ -40,11 +40,11 @@
 			let answerTemplate = `<button class="question__answer" data-qid="${qid}" data-aid="${aid}">${statement}</button>`;
 			jQuery(`.question_${qid} > .question__answers`).append(answerTemplate);
 			jQuery(`.question__answer[data-qid='${qid}'][data-aid='${aid}']`).click(function(e){
-				console.log(`clicked on ${qid}, ${aid}`);
 				checkAnswer(qid, aid, $(this));
 			});
 		});
 	};
+
 	const buildQuiz = function (data){
 		let title = data.name;
 		jQuery('.quiz__title').text(title);
@@ -64,7 +64,7 @@
 	};
 	const getRequest = function () {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', '/{{teamcode}}/quizzes/{{quizid}}', true);
+		xhr.open('GET', '{{teamcode}}/quizzes/{{quizid}}', true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send();
 		xhr.onload = function () {

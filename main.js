@@ -139,6 +139,13 @@ const database = require('./database');
         }
     });
 
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res) {
+        let quizid = req.params.quizid;
+        res.locals.teamcode = dashboard_root;
+        res.locals.quizid = quizid;
+        res.render('quiz.hbs');
+    });
+
     app.put(dashboard_root + '/quizzes/:quizid(\\d+)/close', function (req, res) {
         let quizid = req.params.quizid,
             active = active_quiz.getid();
@@ -247,7 +254,6 @@ const database = require('./database');
         }
     });
 
-
     app.get('/:teamcode([\\da-f]+)', function (req, res) {
         let teamcode = req.params.teamcode,
             active = active_quiz.getid();
@@ -262,7 +268,7 @@ const database = require('./database');
             } else if (row === undefined) {
                 res.redirect('lost.html');
             } else {
-                res.locals.teamcode = teamcode;
+                res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
                 res.render('quiz.hbs');
             }
