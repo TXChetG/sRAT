@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>sRAT Team Dashboard</title>
+</head>
+<body>
+	<!doctype html>
+<html>
+	<head>
+		<title>sRAT Team Dashboard</title>
+		{{> css }}
+	</head>
+	<body>
+		<h1>Dashboard</h1>
+		<ul>
+			<li><a href="/dashboard/teams/add">Add New Team</a></li>
+		</ul>		
+		<div class="dashboard__component">
+			<ul class="dashboard-team__list">
+			</ul>
+		</div>
+		<script>
+			const buildQuizList = function (array){
+				array.forEach((quiz) => {
+					let id = quiz.quizid;
+					let name = quiz.name;
+					let quiz_row = `<li class="quiz">
+					<h3 class="quiz__title">${name}</h3>
+					<ul class="quiz__control-container">
+						<li class="quiz__control"><a href="${id}">Results</a></li>
+						<li class="quiz__control"><a href="{{dashboard_root}}/quizzes/${id}/view">Open</a></li>
+						<li class="quiz__control"><a href="${id}">Edit</a></li>
+						<li class="quiz__control"><a href="${id}">Delete</a></li>
+					</ul>
+				</li>`;
+				let quizList = jQuery('.dashboard-quiz__list');
+				quizList.append(quiz_row);
+			});
+			};
+			const getRequest = function () {
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', '{{dashboard_root}}/quizzes/list', true);
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.send();
+				xhr.onload = function () {
+					var response = JSON.parse(this.responseText);
+					if (response.error) {
+						console.error(`something broked: ${response.error}`);
+					} else {
+						buildQuizList(response);
+					}
+				};
+			};
+
+			jQuery(document).ready(function($) {
+				getRequest();
+			});
+
+		</script>
+	</body>
+</html>
+
+</body>
+</html>

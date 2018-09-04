@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Add a Team</title>
+	{{> css}}
+</head>
+<body>
+	<form class="add_team">
+		<label>Team Name: <input type="text" name="team_name"></label>
+		<input type="submit" class="dashboard__button submit_team" value="Add Team">
+	</form>
+	<script>
+		jQuery(document).ready(function($) {
+			const formToJSON = elements => [].reduce.call(elements, (data, element) => {
+	  		if(element.type !== "submit") {
+	  			data[element.name] = element.value;
+	  		}
+			  return data;
+			}, {});
+			const sendRequest = data => {
+				var xhr = new XMLHttpRequest();
+				xhr.open('PUT', '/dashboard/teams/new', true);
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.send(JSON.stringify(data));
+				xhr.onload = function () {
+					var response = JSON.parse(this.responseText);
+					if (response.error) {
+						console.error(response.error);
+					} else {
+						console.log(response);
+						//showTeamId(response);
+					}
+				};
+			};
+			const handleFormSubmit = e => {
+				e.preventDefault();
+				let form = $('.add_team');
+				const data = formToJSON(form[0].elements);
+				let api_data = {
+					'name': data.team_name
+				}
+				sendRequest(api_data);
+			};
+		});
+	</script>
+</body>
+</html>
