@@ -10,6 +10,22 @@ const database = require('./database');
 (function () {
     'use strict';
 
+    var ActiveQuiz = function () {
+        let buffer = new SharedArrayBuffer(4);
+        let active = new Int32Array(buffer);
+        active[0] = -1;
+
+        let activate = (quizid) => return Atomics.store(active, 0, quizid);
+        let deactivate = () => Atomics.store(active, 0, -1);
+        let getid = () => Atomics.load(active, 0);
+
+        return {
+            activate: activate,
+            deactivate: deactivate,
+            getid: getid
+        };
+    };
+
     var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
 
     const frontend_path = './frontend';
@@ -26,6 +42,8 @@ const database = require('./database');
     });
 
     var app = express();
+
+    let active_quiz = new ActiveQuiz();
 
     app.use(bodyParser.json({
         type: () => true
@@ -96,6 +114,7 @@ const database = require('./database');
 
     app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res) {
         let quizid = req.params.quizid;
+        active_quiz.activate(quizid);
         res.locals.quizid = quizid;
         res.locals.dashboard_root = dashboard_root;
         res.render('quiz.hbs');
