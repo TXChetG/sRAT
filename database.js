@@ -4,14 +4,14 @@
 /*jslint es6 */
 const sqlite3 = require('sqlite3').verbose();
 
-module.exports.Database = function (filename = 'srat.db', callback) {
-    var db = new sqlite3.Database(filename, function (err) {
+module.exports.Database = function(filename = 'srat.db', callback) {
+    var db = new sqlite3.Database(filename, function(err) {
         if (err !== null) {
             return console.error(`cannot open database ${filename}: ${err}`);
         }
     });
 
-    db.serialize(function () {
+    db.serialize(function() {
         db.run('CREATE TABLE IF NOT EXISTS quizzes (quizid INTEGER PRIMARY KEY, name TEXT)', callback);
 
         db.run('CREATE TABLE IF NOT EXISTS questions (questionid INTEGER, quizid INTEGER, statement TEXT, correct INTEGER, PRIMARY KEY (questionid, quizid))', callback);
@@ -23,20 +23,20 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         db.run('CREATE TABLE IF NOT EXISTS responses (responseid INTEGER, teamid INTEGER, questionid INTEGER, quizid INTEGER, response INTEGER, iscorrect INTEGER, score REAL, PRIMARY KEY (responseid, teamid, questionid, quizid))', callback);
     });
 
-    var close = function () {
-        return db.close(function (err) {
+    var close = function() {
+        return db.close(function(err) {
             if (err !== null) {
                 return console.error(`cannot open database ${filename}: ${err}`);
             }
         });
     };
 
-    var list_quizzes = function (callback) {
+    var list_quizzes = function(callback) {
         return db.all('SELECT * FROM quizzes', callback);
     };
 
-    var add_quiz = function (quiz, callback) {
-        db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, function (err) {
+    var add_quiz = function(quiz, callback) {
+        db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, function(err) {
             if (err !== null) {
                 return callback(err);
             }
@@ -47,30 +47,32 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                 for (let i = 0; i < quiz.questions.length; ++i) {
                     let question = quiz.questions[i],
                         questionid = i + 1;
-                    promises.push(new Promise(function (resolve, reject) {
-                        add_question(quizid, questionid, question, function (err) {
+                    promises.push(new Promise(function(resolve, reject) {
+                        add_question(quizid, questionid, question, function(err) {
                             if (err !== null) {
                                 reject(err);
-                            } else {
+                            }
+                            else {
                                 resolve();
                             }
                         });
                     }));
-                };
+                }
                 Promise.all(promises).then(function() {
                     callback(null, quizid);
-                }).catch(function (errors) {
+                }).catch(function(errors) {
                     callback(errors, quizid);
                 });
-            } else {
+            }
+            else {
                 callback(err, quizid);
             }
         });
     };
 
-    var add_question = function (quizid, questionid, question, callback) {
+    var add_question = function(quizid, questionid, question, callback) {
         let stmt = db.prepare('INSERT INTO questions (questionid, quizid, statement, correct) VALUES (?, ?, ?, ?)');
-        stmt.run(questionid, quizid, question.statement, question.correct, function (err) {
+        stmt.run(questionid, quizid, question.statement, question.correct, function(err) {
             if (err !== null) {
                 return callback(err);
             }
@@ -79,56 +81,62 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                 let promises = [];
                 for (let i = 0; i < question.answers.length; ++i) {
                     let answerid = i + 1;
-                    promises.push(new Promise(function (resolve, reject) {
-                        add_answer(answerid, questionid, quizid, question.answers[i], function (err) {
+                    promises.push(new Promise(function(resolve, reject) {
+                        add_answer(answerid, questionid, quizid, question.answers[i], function(err) {
                             if (err !== null) {
                                 reject(err);
-                            } else {
+                            }
+                            else {
                                 resolve();
                             }
                         });
                     }));
                 }
-                Promise.all(promises).then(function () {
+                Promise.all(promises).then(function() {
                     callback(null);
-                }).catch(function (errors) {
-                    callback(errors)
+                }).catch(function(errors) {
+                    callback(errors);
                 });
-            } else {
+            }
+            else {
                 callback(null);
-            };
+            }
         });
         stmt.finalize();
     };
 
-    var add_answer = function (answerid, questionid, quizid, statement, callback) {
+    var add_answer = function(answerid, questionid, quizid, statement, callback) {
         let stmt = db.prepare('INSERT INTO answers (answerid, questionid, quizid, statement) VALUES (?, ?, ?, ?)');
         stmt.run(answerid, questionid, quizid, statement, callback);
         stmt.finalize();
-    }
+    };
 
-    var get_quiz = function (quizid, callback) {
-        db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, function (err, quiz) {
+    var get_quiz = function(quizid, callback) {
+        db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, function(err, quiz) {
             if (err !== null) {
                 return callback(err);
-            } else if (quiz === undefined) {
+            }
+            else if (quiz === undefined) {
                 return callback(null, quiz);
-            } else {
+            }
+            else {
                 quiz.questions = [];
-                new Promise(function (resolve, reject) {
-                    get_questions(quizid, function (err, questions) {
+                new Promise(function(resolve, reject) {
+                    get_questions(quizid, function(err, questions) {
                         if (err !== null) {
                             reject(err);
-                        } else if (questions === undefined) {
+                        }
+                        else if (questions === undefined) {
                             resolve([]);
-                        } else {
+                        }
+                        else {
                             resolve(questions);
                         }
                     });
-                }).then(function (questions) {
+                }).then(function(questions) {
                     quiz.questions = questions;
                     callback(null, quiz);
-                }).catch(function (err) {
+                }).catch(function(err) {
                     callback(err);
                 });
             }
@@ -136,23 +144,27 @@ module.exports.Database = function (filename = 'srat.db', callback) {
     };
 
     var get_questions = function(quizid, callback) {
-        db.all('SELECT questionid, statement FROM questions WHERE quizid=?', quizid, function (err, questions) {
+        db.all('SELECT questionid, statement FROM questions WHERE quizid=?', quizid, function(err, questions) {
             if (err !== null) {
                 return callback(err);
-            } else if (questions === undefined) {
+            }
+            else if (questions === undefined) {
                 return callback(null, questions);
-            } else {
+            }
+            else {
                 let promises = [];
                 for (let i = 0; i < questions.length; ++i) {
                     let question = questions[i],
                         questionid = question.questionid;
-                    promises.push(new Promise(function (resolve, reject) {
-                        get_answers(quizid, questionid, function (err, answers) {
+                    promises.push(new Promise(function(resolve, reject) {
+                        get_answers(quizid, questionid, function(err, answers) {
                             if (err !== null) {
                                 reject(err);
-                            } else if (answers === undefined) {
+                            }
+                            else if (answers === undefined) {
                                 resolve([]);
-                            } else {
+                            }
+                            else {
                                 resolve(answers);
                             }
                         });
@@ -163,7 +175,7 @@ module.exports.Database = function (filename = 'srat.db', callback) {
                         questions[i].answers = all_answers[i];
                     }
                     callback(null, questions);
-                }).catch(function (err) {
+                }).catch(function(err) {
                     callback(err, null);
                 });
             }
@@ -176,17 +188,19 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         stmt.finalize();
     };
 
-    var count_answers = function (quizid, questionid, callback) {
+    var count_answers = function(quizid, questionid, callback) {
         db.get('SELECT COUNT(*) AS count FROM answers WHERE quizid=? AND questionid=?', quizid, questionid, callback);
     };
 
-    var check_answer = function (quizid, questionid, answer, callback) {
-        db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function (err, response) {
+    var check_answer = function(quizid, questionid, answer, callback) {
+        db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function(err, response) {
             if (err !== null) {
                 callback(err);
-            } else if (response === undefined) {
+            }
+            else if (response === undefined) {
                 callback(null, response);
-            } else {
+            }
+            else {
                 callback(err, {
                     quizid: quizid,
                     questionid: questionid,
@@ -197,17 +211,17 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         });
     };
 
-    var add_team = function (team, callback) {
-        db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function (err) {
+    var add_team = function(team, callback) {
+        db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function(err) {
             if (err !== null) {
                 return callback(err);
             }
             callback(err, this.lastID);
-        })
+        });
     };
 
-    var get_team_by_id = function (teamid, callback) {
-        db.get('SELECT * FROM teams WHERE teamid=?', teamid, function (err, response) {
+    var get_team_by_id = function(teamid, callback) {
+        db.get('SELECT * FROM teams WHERE teamid=?', teamid, function(err, response) {
             if (err !== null) {
                 return callback(err, null);
             }
@@ -215,38 +229,45 @@ module.exports.Database = function (filename = 'srat.db', callback) {
         });
     };
 
-    var get_team_by_code = function (teamcode, callback) {
+    var get_team_by_code = function(teamcode, callback) {
         db.get('SELECT * FROM teams WHERE teamcode=?', teamcode, callback);
     };
 
-    var save_response = function (team, result, callback) {
-        count_answers(result.quizid, result.questionid, function (err, answers) {
+    var save_response = function(team, result, callback) {
+        let quizid = result.quizid,
+            questionid = result.questionid,
+            iscorrect = result.iscorrect;
+
+        count_answers(quizid, questionid, function(err, answers) {
             if (err !== null) {
                 return callback(err);
-            } else if (answers === undefined) {
-                return callback({'error': `no answers for quiz ${quizid}, question ${questionid} found`});
+            }
+            else if (answers === undefined) {
+                return callback({ 'error': `no answers for quiz ${quizid}, question ${questionid} found` });
             }
 
             let query = 'SELECT COUNT(*) AS count, MIN(score) AS score FROM responses WHERE teamid=? AND quizid=? AND questionid=?';
-            db.get(query, team.teamid, result.quizid, result.questionid, function (err, response) {
+            db.get(query, team.teamid, quizid, questionid, function(err, response) {
                 let score = 1.0;
                 if (err !== null) {
                     return callback(err);
-                } else if (response.score === null) {
-                    score = result.iscorrect ? score : score/2.0;
-                } else {
-                    score = result.iscorrect ? response.score : response.score/2.0;
+                }
+                else if (response.score === null) {
+                    score = iscorrect ? score : score / 2.0;
+                }
+                else {
+                    score = iscorrect ? response.score : response.score / 2.0;
                 }
                 if (response.count >= (answers.count - 1)) {
                     score = 0.0;
                 }
 
                 let query = 'INSERT INTO responses(teamid, quizid, questionid, response, iscorrect, score) VALUES (?, ?, ?, ?, ?, ?)';
-                db.run(query, team.teamid, result.quizid, result.questionid, result.response, result.iscorrect, score, function (err) {
+                db.run(query, team.teamid, quizid, questionid, response, iscorrect, score, function(err) {
                     if (err !== null) {
                         return callback(err);
                     }
-                    callback(null, Object.assign({}, team, result, {score: score}));
+                    callback(null, Object.assign({}, team, result, { score: score }));
                 });
             });
         });
