@@ -236,6 +236,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
     var save_response = function(team, result, callback) {
         let quizid = result.quizid,
             questionid = result.questionid,
+            proposed = result.proposed,
             iscorrect = result.iscorrect;
 
         count_answers(quizid, questionid, function(err, answers) {
@@ -264,7 +265,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
 
                 let responseid = response.count + 1;
                 query = 'INSERT INTO responses(teamid, quizid, questionid, responseid, response, iscorrect, score) VALUES (?, ?, ?, ?, ?, ?)';
-                db.run(query, team.teamid, quizid, questionid, responseid, response, iscorrect, score, function(err) {
+                db.run(query, team.teamid, quizid, questionid, responseid, proposed, iscorrect, score, function(err) {
                     if (err !== null) {
                         return callback(err);
                     }
