@@ -53,11 +53,11 @@ const database = require('./database');
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(express.static('frontend'));
 
-    hbs.registerPartials(__dirname + '/frontend/common/views/partials/');
+    hbs.registerPartials(__dirname + '/frontend/views/partials/');
     app.set('view engine', 'hbs');
-    app.set('views', [__dirname + '/frontend/dashboard/views', __dirname + '/frontend/common/views']);
+    app.set('views', [__dirname + '/frontend/views']);
 
-    app.use(express.static(common_path));
+    app.use(express.static(frontend_path));
 
     app.get(dashboard_root + '/quizzes/list', function(ignore, res) {
         db.list_quizzes(function(err, rows) {

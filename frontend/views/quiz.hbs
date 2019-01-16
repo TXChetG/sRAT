@@ -1,0 +1,14 @@
+	{{> header}}
+	<body class="quiz">
+		<header>
+			<h1 class='quiz__title'></h1>
+		</header>
+		<section class="quiz__container">
+		</section>
+<script src="/assets/js/quiz.js"></script>
+<script>
+	jQuery(document).ready(function($) {
+		getRequest( '{{teamcode}}', '{{quizid}}' );	
+	});
+</script>
+{{> footer}}

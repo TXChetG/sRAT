@@ -1,0 +1,30 @@
+{{> header}}
+<body class="dashboard">
+	<header>
+		<h1>sRAT Dashboard</h1>
+	</header>
+	<section class="dashboard__controls">
+		<section class="dashboard__quiz-management">
+			<h2>Quiz Management</h2>
+			<div class="quiz-management__buttons stacked-for-small">
+				<a href="{{dashboard_root}}/quizzes/new" class="button">Add New Quiz</a>
+			</div>
+		</section>
+		<section class="dashboard__team-management">
+			<h2>Team Management</h2>
+			<div class="team-management__buttons">
+				<a href="{{dashboard_root}}/teams/new" class="button">Add New Team</a>
+				<button class="button" disabled="disabled">Edit Team</button>
+			</div>
+		</section>		
+	</section>
+	<section class="quiz__list">
+		<h3>All Quizzes</h3>
+	</section>
+	<script src="/assets/js/dashboard.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			getRequest('{{dashboard_root}}');
+		});
+	</script>
+	{{> footer}}
