@@ -21573,7 +21573,8 @@ __webpack_require__(/*! foundation-sites */ "./node_modules/foundation-sites/dis
 
 var add_question = function add_question(selector, button) {
   var i = jquery__WEBPACK_IMPORTED_MODULE_0___default()(selector).length;
-  var question_template = "<fieldset class=\"add__quiz-question fieldset\">\n\t\t<legend>Add a new question to the quiz.</legend>\n\t\t<label>Question Text:\n\t\t\t<input type=\"text\" name=\"question_".concat(i, "\">\n\t\t</label>\n\t\t<label>First Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_0\">\n\t\t</label>\n\t\t<label>Second Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_1\">\n\t\t</label>\n\t\t<label>Third Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_2\">\n\t\t</label>\n\t\t<label>Fourth Answer Choice:\n\t\t\t<input type=\"text\"  name=\"q").concat(i, "_answer_3\">\n\t\t</label>\n\t\t<label>Correct Answer Choice:\n\t\t\t<select name=\"q").concat(i, "_correct\">\n\t\t\t\t<option value=\"0\">1</option>\n\t\t\t\t<option value=\"1\">2</option>\n\t\t\t\t<option value=\"2\">3</option>\n\t\t\t\t<option value=\"3\">4</option>\n\t\t\t</select>\n\t\t</label>\n\t</fieldset>");
+  console.log(i);
+  var question_template = "<fieldset class=\"quiz__question\">\n\t\t<legend>Add a new question to the quiz.</legend>\n\t\t<label>Question Text:\n\t\t\t<input type=\"text\" name=\"question_".concat(i, "\">\n\t\t</label>\n\t\t<label>First Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_0\">\n\t\t</label>\n\t\t<label>Second Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_1\">\n\t\t</label>\n\t\t<label>Third Answer Choice:\n\t\t\t<input type=\"text\" name=\"q").concat(i, "_answer_2\">\n\t\t</label>\n\t\t<label>Fourth Answer Choice:\n\t\t\t<input type=\"text\"  name=\"q").concat(i, "_answer_3\">\n\t\t</label>\n\t\t<label>Correct Answer Choice:\n\t\t\t<select name=\"q").concat(i, "_correct\">\n\t\t\t\t<option value=\"0\">1</option>\n\t\t\t\t<option value=\"1\">2</option>\n\t\t\t\t<option value=\"2\">3</option>\n\t\t\t\t<option value=\"3\">4</option>\n\t\t\t</select>\n\t\t</label>\n\t</fieldset>");
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(button).before(question_template);
 };
 
@@ -21597,7 +21598,7 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()('.quiz').ready(function () {
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.add-quiz').ready(function () {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()('.button__add-question').click(function (e) {
     e.preventDefault();
-    add_question('.quiz__questions', '.button__add-question');
+    add_question('.quiz__question', '.button__add-question');
   });
 });
 jquery__WEBPACK_IMPORTED_MODULE_0___default()('.add-team').ready(function () {

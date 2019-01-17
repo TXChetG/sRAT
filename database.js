@@ -211,6 +211,10 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
+    var list_teams = function(callback) {
+        return db.all('SELECT * FROM teams', callback);
+    };
+
     var add_team = function(team, callback) {
         db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function(err) {
             if (err !== null) {
@@ -283,6 +287,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         add_quiz,
         get_quiz,
         check_answer,
+        list_teams,
         add_team,
         get_team_by_id,
         get_team_by_code,

@@ -69,11 +69,11 @@ const buildQuizList = function (array, dashboard_root){
 });
 };
 const getRequest = function ( dashboard_root ) {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', dashboard_root + '/quizzes/list', true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.send();
-	xhr.onload = function () {
+	var quiz_xhr = new XMLHttpRequest();
+	quiz_xhr.open('GET', dashboard_root + '/quizzes/list', true);
+	quiz_xhr.setRequestHeader('Content-Type', 'application/json');
+	quiz_xhr.send();
+	quiz_xhr.onload = function () {
 		var response = JSON.parse(this.responseText);
 		if (response.error) {
 			console.error(`something broked: ${response.error}`);
@@ -89,4 +89,9 @@ const getRequest = function ( dashboard_root ) {
 			})
 		}
 	};
+	var team_xhr = new XMLHttpRequest();
+	team_xhr.open('GET', dashboard_root + '/teams/list', true);
+	team_xhr.setRequestHeader('Content-Type', 'application/json');
+	team_xhr.send();
+	team_xhr.onload = function () {};
 };

@@ -28,7 +28,7 @@ const sendNewQuiz = function (data) {
 			console.error(response.error);
 		} else {
 			console.log(response);
-			dashboard_redirect();
+			//dashboard_redirect();
 		}
 	};
 };
@@ -44,6 +44,7 @@ const createNewQuiz = (e, form) => {
 	};
 
 	const dataProps = Object.getOwnPropertyNames(data);
+	console.log(dataProps);
 	const questionList = dataProps.filter( property => {
 		if ( property.match(/question_\d+/) ){
 			return true;

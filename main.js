@@ -89,6 +89,7 @@ const database = require('./database');
     });
 
     app.get(dashboard_root + '/quizzes/new', function(ignore, res) {
+        res.locals.page_title = "Create a new quiz";
         res.render('quiz-create.hbs');
     });
 
@@ -118,6 +119,7 @@ const database = require('./database');
                 res.send({ 'error': `cannot find quiz with quizid=${quizid}` });
             }
             else {
+                res.locals.page_title = row.name;
                 res.send(row);
             }
         });
@@ -154,6 +156,7 @@ const database = require('./database');
         let quizid = req.params.quizid;
         res.locals.teamcode = dashboard_root;
         res.locals.quizid = quizid;
+        res.locals.page_title = "Viewing open quiz";
         res.render('quiz.hbs');
     });
 
@@ -201,11 +204,13 @@ const database = require('./database');
 
     app.get(dashboard_root + '/teams/new', function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
+        res.locals.page_title = "Create a new team";
         res.render('teams__add.hbs');
     });
 
     app.use(dashboard_root, function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
+        res.locals.page_title = "Dashboard";
         res.render('dashboard.hbs');
     });
 
@@ -275,6 +280,7 @@ const database = require('./database');
                         }
                         else {
                             res.send(row);
+                            res.locals.page_title = row.name;
                         }
                     });
                 }
@@ -300,6 +306,7 @@ const database = require('./database');
             else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
+                res.locals.page_title = "Active Quiz";
                 res.render('quiz.hbs');
             }
         });
