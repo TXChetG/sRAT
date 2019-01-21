@@ -312,6 +312,30 @@ const database = require('./database');
         });
     });
 
+    app.get('/:teamcode([\\da-z]+)', function(req, res) {
+        let teamcode = req.params.teamcode,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            return res.redirect('lost.html');
+        }
+
+        db.get_team_by_code(teamcode, function(err, row) {
+            if (err !== null) {
+                res.redirect('lost.html');
+            }
+            else if (row === undefined) {
+                res.redirect('lost.html');
+            }
+            else {
+                res.locals.teamcode = '/' + teamcode;
+                res.locals.quizid = active;
+                res.locals.page_title = "Active Quiz";
+                res.render('quiz.hbs');
+            }
+        });
+    });
+
     app.get('/', function(ignore, res) {
         res.redirect('lost.html');
     });
