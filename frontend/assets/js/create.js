@@ -28,7 +28,7 @@ const sendNewQuiz = function (data) {
 			console.error(response.error);
 		} else {
 			console.log(response);
-			//dashboard_redirect();
+			dashboard_redirect();
 		}
 	};
 };
