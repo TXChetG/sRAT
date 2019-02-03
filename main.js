@@ -18,7 +18,7 @@ const database = require('./database');
 
         let activate = (quizid) => Atomics.store(active, 0, quizid);
         let deactivate = () => Atomics.store(active, 0, -1);
-        let isactive = () => (Atomics.load(active, 0) === -1);
+        let isactive = () => (Atomics.load(active, 0) !== -1);
         let getid = () => Atomics.load(active, 0);
 
         return {
@@ -150,6 +150,7 @@ const database = require('./database');
                 }
             });
         }
+
     });
 
     app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function(req, res) {
@@ -181,6 +182,23 @@ const database = require('./database');
                 }
             });
         }
+    });
+
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/results/json', function(req, res) {
+        let quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        db.get_results(quizid, function(err, row) {
+            if (err !== null) {
+                res.send({ 'error': err });
+            }
+            else if (row === undefined) {
+                res.send({ 'error': `cannot get results for quiz with quizid=${quizid}` });
+            }
+            else {
+                res.send(Object.assign({ 'is_active': (active_quiz.isactive() && active == quizid) }, row));
+            }
+        });
     });
 
     app.put(dashboard_root + '/teams/new', function(req, res) {

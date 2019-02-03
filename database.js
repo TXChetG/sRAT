@@ -279,6 +279,31 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
+    const get_results = function(quizid, callback) {
+        const query = `SELECT
+            responses.teamid,
+            teams.name,
+            responses.questionid,
+            responses.responseid,
+            questions.correct,
+            responses.response,
+            responses.iscorrect,
+            responses.score
+        FROM responses
+        JOIN teams
+            ON responses.teamid = teams.teamid
+        JOIN questions
+            ON responses.quizid = questions.quizid
+            AND responses.questionid = questions.questionid
+        WHERE responses.quizid == ?
+        ORDER BY
+            responses.teamid,
+            responses.questionid,
+            responses.responseid;`;
+
+        db.all(query, quizid, callback);
+    };
+
     return {
         handle: db,
         close: close,
@@ -291,6 +316,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         add_team,
         get_team_by_id,
         get_team_by_code,
-        save_response
+        save_response,
+        get_results
     };
 };

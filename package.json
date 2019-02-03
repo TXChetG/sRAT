@@ -4,6 +4,7 @@
   "description": "A webby app for learnin' people real good",
   "main": "main.js",
   "scripts": {
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
