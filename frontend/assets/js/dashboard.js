@@ -61,7 +61,7 @@ const buildQuizList = function (array, dashboard_root){
 				<a class="button view_quiz" href="${dashboard_root}/quizzes/${id}/view" disabled="disabled">View</a>
 				<button class="button" disabled="disabled">Edit</button>
 				<button class="button" disabled="disabled">Delete</button>
-				<button class="button" disabled="disabled">Results</button>
+				<a class="button view_results" href="${dashboard_root}/quizzes/${id}/results/json">Results</a>
 			</div>
 		</div>`;
 	let quizList = jQuery('.quiz__list');

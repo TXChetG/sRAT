@@ -1,4 +1,4 @@
-// Copyright 2018 Nicole M. Lozano. All rights reserved.
+// Copyright 2018-2019 Chet Gassett. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 /*jslint es6, this */
@@ -18,7 +18,7 @@ const database = require('./database');
 
         let activate = (quizid) => Atomics.store(active, 0, quizid);
         let deactivate = () => Atomics.store(active, 0, -1);
-        let isactive = () => (Atomics.load(active, 0) === -1);
+        let isactive = () => (Atomics.load(active, 0) !== -1);
         let getid = () => Atomics.load(active, 0);
 
         return {
@@ -150,6 +150,7 @@ const database = require('./database');
                 }
             });
         }
+
     });
 
     app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function(req, res) {
@@ -181,6 +182,23 @@ const database = require('./database');
                 }
             });
         }
+    });
+
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/results/json', function(req, res) {
+        let quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        db.get_results(quizid, function(err, row) {
+            if (err !== null) {
+                res.send({ 'error': err });
+            }
+            else if (row === undefined) {
+                res.send({ 'error': `cannot get results for quiz with quizid=${quizid}` });
+            }
+            else {
+                res.send(Object.assign({ 'is_active': (active_quiz.isactive() && active == quizid) }, row));
+            }
+        });
     });
 
     app.put(dashboard_root + '/teams/new', function(req, res) {
@@ -289,6 +307,30 @@ const database = require('./database');
     });
 
     app.get('/:teamcode([\\da-f]+)', function(req, res) {
+        let teamcode = req.params.teamcode,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            return res.redirect('lost.html');
+        }
+
+        db.get_team_by_code(teamcode, function(err, row) {
+            if (err !== null) {
+                res.redirect('lost.html');
+            }
+            else if (row === undefined) {
+                res.redirect('lost.html');
+            }
+            else {
+                res.locals.teamcode = '/' + teamcode;
+                res.locals.quizid = active;
+                res.locals.page_title = "Active Quiz";
+                res.render('quiz.hbs');
+            }
+        });
+    });
+
+    app.get('/:teamcode([\\da-z]+)', function(req, res) {
         let teamcode = req.params.teamcode,
             active = active_quiz.getid();
 
