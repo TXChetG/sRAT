@@ -1,4 +1,4 @@
-// Copyright 2018 Nicole M. Lozano. All rights reserved.
+// Copyright 2018-2019 Chet Gassett. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 /*jslint es6 */
@@ -211,6 +211,10 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
+    var list_teams = function(callback) {
+        return db.all('SELECT * FROM teams', callback);
+    };
+
     var add_team = function(team, callback) {
         db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function(err) {
             if (err !== null) {
@@ -275,6 +279,31 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
+    const get_results = function(quizid, callback) {
+        const query = `SELECT
+            responses.teamid,
+            teams.name,
+            responses.questionid,
+            responses.responseid,
+            questions.correct,
+            responses.response,
+            responses.iscorrect,
+            responses.score
+        FROM responses
+        JOIN teams
+            ON responses.teamid = teams.teamid
+        JOIN questions
+            ON responses.quizid = questions.quizid
+            AND responses.questionid = questions.questionid
+        WHERE responses.quizid == ?
+        ORDER BY
+            responses.teamid,
+            responses.questionid,
+            responses.responseid;`;
+
+        db.all(query, quizid, callback);
+    };
+
     return {
         handle: db,
         close: close,
@@ -283,9 +312,11 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         add_quiz,
         get_quiz,
         check_answer,
+        list_teams,
         add_team,
         get_team_by_id,
         get_team_by_code,
-        save_response
+        save_response,
+        get_results
     };
 };

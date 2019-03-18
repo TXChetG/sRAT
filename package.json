@@ -4,6 +4,7 @@
   "description": "A webby app for learnin' people real good",
   "main": "main.js",
   "scripts": {
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -13,9 +14,9 @@
   "keywords": [
     "RAT"
   ],
-  "author": "Nicole Lozano <nlozano4@angelo.edu>",
+  "author": "Chet Gassett <chetgassett@gmail.com>",
   "contributors": [
-    "Chet Gassett <chetgassett@gmail.com>",
+    "Nicole Lozano <nlozano4@angelo.edu>",
     "Douglas G. Moore <doug@dglmoore.com>"
   ],
   "license": "MIT",

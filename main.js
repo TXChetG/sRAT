@@ -1,4 +1,4 @@
-// Copyright 2018 Nicole M. Lozano. All rights reserved.
+// Copyright 2018-2019 Chet Gassett. All rights reserved.
 // Use of this source code is governed by the MIT
 // license that can be found in the LICENSE file.
 /*jslint es6, this */
@@ -18,7 +18,7 @@ const database = require('./database');
 
         let activate = (quizid) => Atomics.store(active, 0, quizid);
         let deactivate = () => Atomics.store(active, 0, -1);
-        let isactive = () => (Atomics.load(active, 0) === -1);
+        let isactive = () => (Atomics.load(active, 0) !== -1);
         let getid = () => Atomics.load(active, 0);
 
         return {
@@ -53,11 +53,11 @@ const database = require('./database');
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(express.static('frontend'));
 
-    hbs.registerPartials(__dirname + '/frontend/common/views/partials/');
+    hbs.registerPartials(__dirname + '/frontend/views/partials/');
     app.set('view engine', 'hbs');
-    app.set('views', [__dirname + '/frontend/dashboard/views', __dirname + '/frontend/common/views']);
+    app.set('views', [__dirname + '/frontend/views']);
 
-    app.use(express.static(common_path));
+    app.use(express.static(frontend_path));
 
     app.get(dashboard_root + '/quizzes/list', function(ignore, res) {
         db.list_quizzes(function(err, rows) {
@@ -89,6 +89,7 @@ const database = require('./database');
     });
 
     app.get(dashboard_root + '/quizzes/new', function(ignore, res) {
+        res.locals.page_title = "Create a new quiz";
         res.render('quiz-create.hbs');
     });
 
@@ -118,6 +119,7 @@ const database = require('./database');
                 res.send({ 'error': `cannot find quiz with quizid=${quizid}` });
             }
             else {
+                res.locals.page_title = row.name;
                 res.send(row);
             }
         });
@@ -148,12 +150,14 @@ const database = require('./database');
                 }
             });
         }
+
     });
 
     app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function(req, res) {
         let quizid = req.params.quizid;
         res.locals.teamcode = dashboard_root;
         res.locals.quizid = quizid;
+        res.locals.page_title = "Viewing open quiz";
         res.render('quiz.hbs');
     });
 
@@ -180,6 +184,23 @@ const database = require('./database');
         }
     });
 
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/results/json', function(req, res) {
+        let quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        db.get_results(quizid, function(err, row) {
+            if (err !== null) {
+                res.send({ 'error': err });
+            }
+            else if (row === undefined) {
+                res.send({ 'error': `cannot get results for quiz with quizid=${quizid}` });
+            }
+            else {
+                res.send(Object.assign({ 'is_active': (active_quiz.isactive() && active == quizid) }, row));
+            }
+        });
+    });
+
     app.put(dashboard_root + '/teams/new', function(req, res) {
         req.body.teamcode = randomid(16);
         db.add_team(req.body, function(err, teamid) {
@@ -201,11 +222,13 @@ const database = require('./database');
 
     app.get(dashboard_root + '/teams/new', function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
+        res.locals.page_title = "Create a new team";
         res.render('teams__add.hbs');
     });
 
     app.use(dashboard_root, function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
+        res.locals.page_title = "Dashboard";
         res.render('dashboard.hbs');
     });
 
@@ -275,6 +298,7 @@ const database = require('./database');
                         }
                         else {
                             res.send(row);
+                            res.locals.page_title = row.name;
                         }
                     });
                 }
@@ -300,6 +324,31 @@ const database = require('./database');
             else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
+                res.locals.page_title = "Active Quiz";
+                res.render('quiz.hbs');
+            }
+        });
+    });
+
+    app.get('/:teamcode([\\da-z]+)', function(req, res) {
+        let teamcode = req.params.teamcode,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            return res.redirect('lost.html');
+        }
+
+        db.get_team_by_code(teamcode, function(err, row) {
+            if (err !== null) {
+                res.redirect('lost.html');
+            }
+            else if (row === undefined) {
+                res.redirect('lost.html');
+            }
+            else {
+                res.locals.teamcode = '/' + teamcode;
+                res.locals.quizid = active;
+                res.locals.page_title = "Active Quiz";
                 res.render('quiz.hbs');
             }
         });

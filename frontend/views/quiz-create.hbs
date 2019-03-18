@@ -1,0 +1,55 @@
+	{{> header}}
+<body class="dashboard add-quiz">
+	<header>
+		<h1>Add a New Quiz</h1>
+		<p>Use this form to add a new quiz to your course.</p>
+	</header>
+	<section class="add-quiz__form__container">
+		<form class="add-quiz__form">
+				<div class="quiz__title">
+					<label>Title:
+						<input type="text" name="quiz_title" placeholder="Quiz Title">
+					</label>
+				</div>
+				<div class="quiz__questions">
+					<fieldset class="quiz__question">
+						<legend>Add a new question to the quiz.</legend>
+						<label>Question Text:
+							<input type="text" name="question_0">
+						</label>
+						<label>First Answer Choice:
+							<input type="text" name="q0_answer_0">
+						</label>
+						<label>Second Answer Choice:
+							<input type="text" name="q0_answer_1">
+						</label>
+						<label>Third Answer Choice:
+							<input type="text" name="q0_answer_2">
+						</label>
+						<label>Fourth Answer Choice:
+							<input type="text" name="q0_answer_3">
+						</label>
+						<label>Correct Answer Choice:
+							<select name="q0_correct">
+								<option value="0">1</option>
+								<option value="1">2</option>
+								<option value="2">3</option>
+								<option value="3">4</option>
+							</select>
+						</label>
+					</fieldset>
+					<button class="button__add-question">Add a Question</button>
+				</div>
+			<button class="button submit_quiz">Finish Quiz</button>
+		</form>
+	</section>
+<script src="/assets/js/create.js"></script>
+<script>
+	jQuery(document).ready(function($) {
+		$('.add-quiz__form').submit( e => {
+			e.preventDefault();
+			createNewQuiz(e, '.add-quiz__form');
+		} );
+	});
+</script>
+{{> footer}}
