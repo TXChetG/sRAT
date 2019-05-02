@@ -5,7 +5,7 @@
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports.Database = function(filename = 'srat.db', callback) {
-    var db = new sqlite3.Database(filename, function(err) {
+    const db = new sqlite3.Database(filename, function(err) {
         if (err !== null) {
             return console.error(`cannot open database ${filename}: ${err}`);
         }
@@ -23,7 +23,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         db.run('CREATE TABLE IF NOT EXISTS responses (responseid INTEGER, teamid INTEGER, questionid INTEGER, quizid INTEGER, response INTEGER, iscorrect INTEGER, score REAL, PRIMARY KEY (responseid, teamid, questionid, quizid))', callback);
     });
 
-    var close = function() {
+    const close = function() {
         return db.close(function(err) {
             if (err !== null) {
                 return console.error(`cannot open database ${filename}: ${err}`);
@@ -31,21 +31,21 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var list_quizzes = function(callback) {
+    const list_quizzes = function(callback) {
         return db.all('SELECT * FROM quizzes', callback);
     };
 
-    var add_quiz = function(quiz, callback) {
+    const add_quiz = function(quiz, callback) {
         db.run('INSERT INTO quizzes (name) VALUES (?)', quiz.name, function(err) {
             if (err !== null) {
                 return callback(err);
             }
 
-            let quizid = this.lastID;
+            const quizid = this.lastID;
             if ('questions' in quiz && quiz.questions.constructor === Array) {
-                let promises = [];
+                const promises = [];
                 for (let i = 0; i < quiz.questions.length; ++i) {
-                    let question = quiz.questions[i],
+                    const question = quiz.questions[i],
                         questionid = i + 1;
                     promises.push(new Promise(function(resolve, reject) {
                         add_question(quizid, questionid, question, function(err) {
@@ -70,17 +70,17 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var add_question = function(quizid, questionid, question, callback) {
-        let stmt = db.prepare('INSERT INTO questions (questionid, quizid, statement, correct) VALUES (?, ?, ?, ?)');
+    const add_question = function(quizid, questionid, question, callback) {
+        const stmt = db.prepare('INSERT INTO questions (questionid, quizid, statement, correct) VALUES (?, ?, ?, ?)');
         stmt.run(questionid, quizid, question.statement, question.correct, function(err) {
             if (err !== null) {
                 return callback(err);
             }
 
             if ('answers' in question && question.answers.constructor === Array) {
-                let promises = [];
+                const promises = [];
                 for (let i = 0; i < question.answers.length; ++i) {
-                    let answerid = i + 1;
+                    const answerid = i + 1;
                     promises.push(new Promise(function(resolve, reject) {
                         add_answer(answerid, questionid, quizid, question.answers[i], function(err) {
                             if (err !== null) {
@@ -105,13 +105,13 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         stmt.finalize();
     };
 
-    var add_answer = function(answerid, questionid, quizid, statement, callback) {
-        let stmt = db.prepare('INSERT INTO answers (answerid, questionid, quizid, statement) VALUES (?, ?, ?, ?)');
+    const add_answer = function(answerid, questionid, quizid, statement, callback) {
+        const stmt = db.prepare('INSERT INTO answers (answerid, questionid, quizid, statement) VALUES (?, ?, ?, ?)');
         stmt.run(answerid, questionid, quizid, statement, callback);
         stmt.finalize();
     };
 
-    var get_quiz = function(quizid, callback) {
+    const get_quiz = function(quizid, callback) {
         db.get('SELECT * FROM quizzes WHERE quizid=?', quizid, function(err, quiz) {
             if (err !== null) {
                 return callback(err);
@@ -143,7 +143,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var get_questions = function(quizid, callback) {
+    const get_questions = function(quizid, callback) {
         db.all('SELECT questionid, statement FROM questions WHERE quizid=?', quizid, function(err, questions) {
             if (err !== null) {
                 return callback(err);
@@ -152,9 +152,9 @@ module.exports.Database = function(filename = 'srat.db', callback) {
                 return callback(null, questions);
             }
             else {
-                let promises = [];
+                const promises = [];
                 for (let i = 0; i < questions.length; ++i) {
-                    let question = questions[i],
+                    const question = questions[i],
                         questionid = question.questionid;
                     promises.push(new Promise(function(resolve, reject) {
                         get_answers(quizid, questionid, function(err, answers) {
@@ -182,17 +182,17 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var get_answers = function(quizid, questionid, callback) {
-        let stmt = db.prepare('SELECT answerid, statement FROM answers WHERE quizid=? AND questionid=?');
+    const get_answers = function(quizid, questionid, callback) {
+        const stmt = db.prepare('SELECT answerid, statement FROM answers WHERE quizid=? AND questionid=?');
         stmt.all(quizid, questionid, callback);
         stmt.finalize();
     };
 
-    var count_answers = function(quizid, questionid, callback) {
+    const count_answers = function(quizid, questionid, callback) {
         db.get('SELECT COUNT(*) AS count FROM answers WHERE quizid=? AND questionid=?', quizid, questionid, callback);
     };
 
-    var check_answer = function(quizid, questionid, answer, callback) {
+    const check_answer = function(quizid, questionid, answer, callback) {
         db.get('SELECT correct FROM questions WHERE quizid=? AND questionid=?', quizid, questionid, function(err, response) {
             if (err !== null) {
                 callback(err);
@@ -211,11 +211,11 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var list_teams = function(callback) {
+    const list_teams = function(callback) {
         return db.all('SELECT * FROM teams', callback);
     };
 
-    var add_team = function(team, callback) {
+    const add_team = function(team, callback) {
         db.run('INSERT INTO teams (name, teamcode) VALUES (?, ?)', team.name, team.teamcode, function(err) {
             if (err !== null) {
                 return callback(err);
@@ -224,7 +224,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var get_team_by_id = function(teamid, callback) {
+    const get_team_by_id = function(teamid, callback) {
         db.get('SELECT * FROM teams WHERE teamid=?', teamid, function(err, response) {
             if (err !== null) {
                 return callback(err, null);
@@ -233,12 +233,12 @@ module.exports.Database = function(filename = 'srat.db', callback) {
         });
     };
 
-    var get_team_by_code = function(teamcode, callback) {
+    const get_team_by_code = function(teamcode, callback) {
         db.get('SELECT * FROM teams WHERE teamcode=?', teamcode, callback);
     };
 
-    var save_response = function(team, result, callback) {
-        let quizid = result.quizid,
+    const save_response = function(team, result, callback) {
+        const quizid = result.quizid,
             questionid = result.questionid,
             proposed = result.proposed,
             iscorrect = result.iscorrect;
@@ -267,7 +267,7 @@ module.exports.Database = function(filename = 'srat.db', callback) {
                     score = 0.0;
                 }
 
-                let responseid = response.count + 1;
+                const responseid = response.count + 1;
                 query = 'INSERT INTO responses(teamid, quizid, questionid, responseid, response, iscorrect, score) VALUES (?, ?, ?, ?, ?, ?, ?)';
                 db.run(query, team.teamid, quizid, questionid, responseid, proposed, iscorrect, score, function(err) {
                     if (err !== null) {
