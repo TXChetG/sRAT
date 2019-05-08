@@ -10,7 +10,7 @@ const database = require('./database');
 (function() {
     'use strict';
 
-    var ActiveQuiz = function() {
+    let ActiveQuiz = function() {
         /* globals Atomics, SharedArrayBuffer */
         let buffer = new SharedArrayBuffer(4);
         let active = new Int32Array(buffer);
@@ -29,21 +29,20 @@ const database = require('./database');
         };
     };
 
-    var randomid = (n) => Math.random().toString(16).substring(2, n + 2);
+    let randomid = (n) => Math.random().toString(16).substring(2, n + 2);
 
     const frontend_path = './frontend';
-    const common_path = `${frontend_path}/common`;
 
     const dashboard_root = '/' + randomid(16);
     console.log(`Dashboard Root: ${dashboard_root}`);
 
-    var db = database.Database('srat.db', function(err) {
+    let db = database.Database('srat.db', function(err) {
         if (err !== null) {
             return console.error(`cannot create database: ${err}`);
         }
     });
 
-    var app = express();
+    let app = express();
 
     let active_quiz = new ActiveQuiz();
 
@@ -89,7 +88,7 @@ const database = require('./database');
     });
 
     app.get(dashboard_root + '/quizzes/new', function(ignore, res) {
-        res.locals.page_title = "Create a new quiz";
+        res.locals.page_title = 'Create a new quiz';
         res.render('quiz-create.hbs');
     });
 
@@ -157,7 +156,7 @@ const database = require('./database');
         let quizid = req.params.quizid;
         res.locals.teamcode = dashboard_root;
         res.locals.quizid = quizid;
-        res.locals.page_title = "Viewing open quiz";
+        res.locals.page_title = 'Viewing open quiz';
         res.render('quiz.hbs');
     });
 
@@ -222,13 +221,13 @@ const database = require('./database');
 
     app.get(dashboard_root + '/teams/new', function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
-        res.locals.page_title = "Create a new team";
+        res.locals.page_title = 'Create a new team';
         res.render('teams__add.hbs');
     });
 
     app.use(dashboard_root, function(ignore, res) {
         res.locals.dashboard_root = dashboard_root;
-        res.locals.page_title = "Dashboard";
+        res.locals.page_title = 'Dashboard';
         res.render('dashboard.hbs');
     });
 
@@ -324,7 +323,7 @@ const database = require('./database');
             else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
-                res.locals.page_title = "Active Quiz";
+                res.locals.page_title = 'Active Quiz';
                 res.render('quiz.hbs');
             }
         });
@@ -348,7 +347,7 @@ const database = require('./database');
             else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
-                res.locals.page_title = "Active Quiz";
+                res.locals.page_title = 'Active Quiz';
                 res.render('quiz.hbs');
             }
         });
