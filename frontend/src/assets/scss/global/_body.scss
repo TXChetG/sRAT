@@ -1,0 +1,4 @@
+body {
+	@include xy-grid-container($grid-container, false);
+	@include xy-grid(horizontal, true);
+}

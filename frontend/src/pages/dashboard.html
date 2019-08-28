@@ -1,0 +1,37 @@
+<body class="dashboard">
+	<header>
+		<h1>sRAT Dashboard</h1>
+	</header>
+	<section class="dashboard__controls">
+		<section class="dashboard__quiz-management">
+			<h2>Quiz Management</h2>
+			<div class="quiz-management__buttons stacked-for-small">
+				<button class="button">Add New Quiz</button>
+			</div>
+		</section>
+		<section class="dashboard__team-management">
+			<h2>Team Management</h2>
+			<div class="team-management__buttons">
+				<button class="button">Add New Team</button>
+				<button class="button">Edit Team</button>
+			</div>
+		</section>		
+	</section>
+	<section class="quiz__list">
+		<h3>All Quizzes</h3>
+		{{#repeat 5}}
+		<div class="quiz__row">
+			<div class="quiz__row__meta">
+				<h4>Quiz Title</h4>
+			</div>
+			<div class="quiz__row__actions">
+				<button class="button">Open</button>
+				<button class="button">Close</button>
+				<button class="button">View</button>
+				<button class="button">Edit</button>
+				<button class="button">Delete</button>
+				<button class="button">Results</button>
+			</div>
+		</div>
+		{{/repeat}}
+	</section>

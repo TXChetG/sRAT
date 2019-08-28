@@ -48,8 +48,8 @@ const createNewQuiz = (e, form) => {
 
     const dataProps = Object.getOwnPropertyNames(data);
     console.log(dataProps);
-    const questionList = dataProps.filter( property => {
-        if ( property.match(/question_\d+/) ){
+    const questionList = dataProps.filter(property => {
+        if (property.match(/question_\d+/)) {
             return true;
         }
     });
@@ -57,13 +57,13 @@ const createNewQuiz = (e, form) => {
 
     const questionObjtoJSON = (array, data) => {
         const questionArray = [];
-        for(let i = 0; i < array.length; i++){
+        for (let i = 0; i < array.length; i++) {
             let obj = {};
             let q = array[i];
             obj.statement = data[q];
             obj.correct = (parseInt(data['q' + i + '_correct']) + 1);
             obj.answers = [];
-            obj.answers.push(data['q' + i + '_answer_0'],data['q' + i + '_answer_1'],data['q' + i + '_answer_2'],data['q' + i + '_answer_3']);
+            obj.answers.push(data['q' + i + '_answer_0'], data['q' + i + '_answer_1'], data['q' + i + '_answer_2'], data['q' + i + '_answer_3']);
             questionArray.push(obj);
         }
         return questionArray;
@@ -101,8 +101,9 @@ const createNewTeam = (e, form) => {
     e.preventDefault();
     let formObj = $(form);
     const data = formToJSON(formObj[0].elements);
+
     let api_data = {
-        'name': data.team_name
+        'name': data.teamname
     };
     sendNewTeam(api_data);
 };

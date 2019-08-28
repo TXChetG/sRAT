@@ -1,0 +1,29 @@
+{{> header}}
+
+<body class="dashboard edit-quiz">
+  <header>
+    <h1>Editing...Quiz</h1>
+    <p>Use this form to edit the selected quiz.</p>
+  </header>
+  <section class="add-quiz__form__container">
+    <form class="add-quiz__form">
+      <div class="quiz__title">
+        <label>Title:
+          <input type="text" name="quiz_title" placeholder="Quiz Title">
+        </label>
+      </div>
+      <div class="quiz__questions">
+        
+        <button class="button__add-question">Add a Question</button>
+      </div>
+      <button class="button submit_quiz">Finish Quiz</button>
+    </form>
+  </section>
+  <script src="/assets/js/create.js"></script>
+  <script src="/assets/js/quiz.js"></script>
+  <script>
+    jQuery(document).ready(function ($) {
+      getRequest('{{teamcode}}', '{{quizid}}', buildEdit);
+    });
+  </script>
+  {{> footer}}

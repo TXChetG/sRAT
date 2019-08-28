@@ -7,10 +7,10 @@ const hbs = require('hbs');
 const bodyParser = require('body-parser');
 const database = require('./database');
 
-(function() {
+(function () {
     'use strict';
 
-    let ActiveQuiz = function() {
+    let ActiveQuiz = function () {
         /* globals Atomics, SharedArrayBuffer */
         let buffer = new SharedArrayBuffer(4);
         let active = new Int32Array(buffer);
@@ -33,10 +33,11 @@ const database = require('./database');
 
     const frontend_path = './frontend';
 
-    const dashboard_root = '/' + randomid(16);
+    //const dashboard_root = '/' + randomid(16);
+    const dashboard_root = '/dashboard';
     console.log(`Dashboard Root: ${dashboard_root}`);
 
-    let db = database.Database('srat.db', function(err) {
+    let db = database.Database('srat.db', function (err) {
         if (err !== null) {
             return console.error(`cannot create database: ${err}`);
         }
@@ -49,7 +50,9 @@ const database = require('./database');
     app.use(bodyParser.json({
         type: () => true
     }));
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.urlencoded({
+        extended: false
+    }));
     app.use(express.static('frontend'));
 
     hbs.registerPartials(__dirname + '/frontend/views/partials/');
@@ -58,28 +61,31 @@ const database = require('./database');
 
     app.use(express.static(frontend_path));
 
-    app.get(dashboard_root + '/quizzes/list', function(ignore, res) {
-        db.list_quizzes(function(err, rows) {
+    app.get(dashboard_root + '/quizzes/list', function (ignore, res) {
+        db.list_quizzes(function (err, rows) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else {
+                res.send({
+                    'error': err
+                });
+            } else {
                 res.send(rows);
             }
         });
     });
 
-    app.put(dashboard_root + '/quizzes/new', function(req, res) {
-        db.add_quiz(req.body, function(err, quizid) {
+    app.put(dashboard_root + '/quizzes/new', function (req, res) {
+        db.add_quiz(req.body, function (err, quizid) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else {
-                db.get_quiz(quizid, function(err, row) {
+                res.send({
+                    'error': err
+                });
+            } else {
+                db.get_quiz(quizid, function (err, row) {
                     if (err !== null) {
-                        res.send({ 'error': err });
-                    }
-                    else {
+                        res.send({
+                            'error': err
+                        });
+                    } else {
                         res.send(row);
                     }
                 });
@@ -87,72 +93,82 @@ const database = require('./database');
         });
     });
 
-    app.get(dashboard_root + '/quizzes/new', function(ignore, res) {
+    app.get(dashboard_root + '/quizzes/new', function (ignore, res) {
         res.locals.page_title = 'Create a new quiz';
         res.render('quiz-create.hbs');
     });
 
-    app.post(dashboard_root + '/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function(req, res) {
+    app.post(dashboard_root + '/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function (req, res) {
         let quizid = req.params.quizid,
             questionid = req.params.questionid;
-        db.check_answer(quizid, questionid, req.body, function(err, result) {
+        db.check_answer(quizid, questionid, req.body, function (err, result) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else if (result === undefined) {
-                res.send({ 'error': `quiz ${quizid}, question ${questionid} does not exist` });
-            }
-            else {
+                res.send({
+                    'error': err
+                });
+            } else if (result === undefined) {
+                res.send({
+                    'error': `quiz ${quizid}, question ${questionid} does not exist`
+                });
+            } else {
                 res.send(result);
             }
         });
     });
 
-    app.get(dashboard_root + '/quizzes/:quizid(\\d+)', function(req, res) {
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)', function (req, res) {
         let quizid = req.params.quizid;
-        db.get_quiz(quizid, function(err, row) {
+        db.get_quiz(quizid, function (err, row) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else if (row === undefined) {
-                res.send({ 'error': `cannot find quiz with quizid=${quizid}` });
-            }
-            else {
+                res.send({
+                    'error': err
+                });
+            } else if (row === undefined) {
+                res.send({
+                    'error': `cannot find quiz with quizid=${quizid}`
+                });
+            } else {
                 res.locals.page_title = row.name;
                 res.send(row);
             }
         });
     });
 
-    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/open', function(req, res) {
+    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/open', function (req, res) {
         let quizid = req.params.quizid,
             active = active_quiz.getid();
 
         if (active !== -1) {
             if (quizid != active) {
-                res.send({ 'error': `quiz ${active} is already open` });
+                res.send({
+                    'error': `quiz ${active} is already open`
+                });
+            } else {
+                res.send({
+                    'quizid': active
+                });
             }
-            else {
-                res.send({ 'quizid': active });
-            }
-        }
-        else {
-            db.get_quiz(quizid, function(err, row) {
+        } else {
+            db.get_quiz(quizid, function (err, row) {
                 if (err !== null) {
-                    res.send({ 'error': err });
-                }
-                else if (row === undefined) {
-                    res.send({ 'error': `cannot open quiz with quizid=${quizid}` });
-                }
-                else {
-                    res.send({ 'quizid': active_quiz.activate(quizid) });
+                    res.send({
+                        'error': err
+                    });
+                } else if (row === undefined) {
+                    res.send({
+                        'error': `cannot open quiz with quizid=${quizid}`
+                    });
+                } else {
+                    res.send({
+                        'quizid': active_quiz.activate(quizid)
+                    });
                 }
             });
         }
 
     });
 
-    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function(req, res) {
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/view', function (req, res) {
         let quizid = req.params.quizid;
         res.locals.teamcode = dashboard_root;
         res.locals.quizid = quizid;
@@ -160,58 +176,78 @@ const database = require('./database');
         res.render('quiz.hbs');
     });
 
-    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/close', function(req, res) {
+    app.get(dashboard_root + '/quizzes/:quizid(\\d)/edit', function (req, res) {
+        let quizid = req.params.quizid;
+        res.locals.teamcode = dashboard_root;
+        res.locals.quizid = quizid;
+        res.locals.page_title = 'Edit Quiz: ' + quizid;
+        res.render('quiz-edit.hbs');
+    });
+
+    app.put(dashboard_root + '/quizzes/:quizid(\\d+)/close', function (req, res) {
         let quizid = req.params.quizid,
             active = active_quiz.getid();
 
         if (active === -1 || quizid != active) {
-            res.send({ 'closed': true });
-        }
-        else {
-            db.get_quiz(quizid, function(err, row) {
+            res.send({
+                'closed': true
+            });
+        } else {
+            db.get_quiz(quizid, function (err, row) {
                 if (err !== null) {
-                    res.send({ 'error': err });
-                }
-                else if (row === undefined) {
-                    res.send({ 'error': `cannot close quiz with quizid=${quizid}` });
-                }
-                else {
+                    res.send({
+                        'error': err
+                    });
+                } else if (row === undefined) {
+                    res.send({
+                        'error': `cannot close quiz with quizid=${quizid}`
+                    });
+                } else {
                     active_quiz.deactivate();
-                    res.send({ 'closed': active_quiz.isactive() });
+                    res.send({
+                        'closed': active_quiz.isactive()
+                    });
                 }
             });
         }
     });
 
-    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/results/json', function(req, res) {
+    app.get(dashboard_root + '/quizzes/:quizid(\\d+)/results/json', function (req, res) {
         let quizid = req.params.quizid,
             active = active_quiz.getid();
 
-        db.get_results(quizid, function(err, row) {
+        db.get_results(quizid, function (err, row) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else if (row === undefined) {
-                res.send({ 'error': `cannot get results for quiz with quizid=${quizid}` });
-            }
-            else {
-                res.send(Object.assign({ 'is_active': (active_quiz.isactive() && active == quizid) }, row));
+                res.send({
+                    'error': err
+                });
+            } else if (row === undefined) {
+                res.send({
+                    'error': `cannot get results for quiz with quizid=${quizid}`
+                });
+            } else {
+                res.send(Object.assign({
+                    'is_active': (active_quiz.isactive() && active == quizid)
+                }, row));
             }
         });
     });
 
-    app.put(dashboard_root + '/teams/new', function(req, res) {
+    app.put(dashboard_root + '/teams/new', function (req, res) {
         req.body.teamcode = randomid(16);
-        db.add_team(req.body, function(err, teamid) {
+        console.log(req.body);
+        db.add_team(req.body, function (err, teamid) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else {
-                db.get_team_by_id(teamid, function(err, row) {
+                res.send({
+                    'error': err
+                });
+            } else {
+                db.get_team_by_id(teamid, function (err, row) {
                     if (err !== null) {
-                        res.send({ 'error': err });
-                    }
-                    else {
+                        res.send({
+                            'error': err
+                        });
+                    } else {
                         res.send(row);
                     }
                 });
@@ -219,46 +255,52 @@ const database = require('./database');
         });
     });
 
-    app.get(dashboard_root + '/teams/new', function(ignore, res) {
+    app.get(dashboard_root + '/teams/new', function (ignore, res) {
         res.locals.dashboard_root = dashboard_root;
         res.locals.page_title = 'Create a new team';
         res.render('teams__add.hbs');
     });
 
-    app.use(dashboard_root, function(ignore, res) {
+    app.use(dashboard_root, function (ignore, res) {
         res.locals.dashboard_root = dashboard_root;
         res.locals.page_title = 'Dashboard';
         res.render('dashboard.hbs');
     });
 
-    app.post('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function(req, res) {
+    app.post('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)/:questionid(\\d+)/check', function (req, res) {
         let teamcode = req.params.teamcode,
             quizid = req.params.quizid,
             questionid = req.params.questionid;
-        db.get_team_by_code(teamcode, function(err, team) {
+        db.get_team_by_code(teamcode, function (err, team) {
             if (err !== null) {
-                res.send({ 'error': err });
-            }
-            else if (team === undefined) {
-                res.send({ 'error': `team ${teamcode} does not exist` });
-            }
-            else {
-                db.check_answer(quizid, questionid, req.body, function(err, result) {
+                res.send({
+                    'error': err
+                });
+            } else if (team === undefined) {
+                res.send({
+                    'error': `team ${teamcode} does not exist`
+                });
+            } else {
+                db.check_answer(quizid, questionid, req.body, function (err, result) {
                     if (err !== null) {
-                        res.send({ 'error': err });
-                    }
-                    else if (result === undefined) {
-                        res.send({ 'error': `quiz ${quizid}, question ${questionid} does not exist` });
-                    }
-                    else {
-                        db.save_response(team, result, function(err, result) {
+                        res.send({
+                            'error': err
+                        });
+                    } else if (result === undefined) {
+                        res.send({
+                            'error': `quiz ${quizid}, question ${questionid} does not exist`
+                        });
+                    } else {
+                        db.save_response(team, result, function (err, result) {
                             if (err !== null) {
-                                res.send({ 'error': err });
-                            }
-                            else if (result === undefined) {
-                                res.send({ 'error': 'could not save response for unknown reasons' });
-                            }
-                            else {
+                                res.send({
+                                    'error': err
+                                });
+                            } else if (result === undefined) {
+                                res.send({
+                                    'error': 'could not save response for unknown reasons'
+                                });
+                            } else {
                                 res.send(result);
                             }
                         });
@@ -268,34 +310,38 @@ const database = require('./database');
         });
     });
 
-    app.get('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)', function(req, res) {
+    app.get('/:teamcode([\\da-f]+)/quizzes/:quizid(\\d+)', function (req, res) {
         let teamcode = req.params.teamcode,
             quizid = req.params.quizid,
             active = active_quiz.getid();
 
         if (active === -1) {
-            res.send({ 'error': 'no quiz is open' });
-        }
-        else if (quizid != active) {
-            res.send({ 'error': `quiz ${quizid} is not active` });
-        }
-        else {
-            db.get_team_by_code(teamcode, function(err, row) {
+            res.send({
+                'error': 'no quiz is open'
+            });
+        } else if (quizid != active) {
+            res.send({
+                'error': `quiz ${quizid} is not active`
+            });
+        } else {
+            db.get_team_by_code(teamcode, function (err, row) {
                 if (err !== null) {
                     res.send(err);
-                }
-                else if (row === undefined) {
-                    res.send({ 'error': `team ${teamcode} does not exist` });
-                }
-                else {
-                    db.get_quiz(quizid, function(err, row) {
+                } else if (row === undefined) {
+                    res.send({
+                        'error': `team ${teamcode} does not exist`
+                    });
+                } else {
+                    db.get_quiz(quizid, function (err, row) {
                         if (err !== null) {
-                            res.send({ 'error': err });
-                        }
-                        else if (row === undefined) {
-                            res.send({ 'error': `quiz ${quizid} does not exist` });
-                        }
-                        else {
+                            res.send({
+                                'error': err
+                            });
+                        } else if (row === undefined) {
+                            res.send({
+                                'error': `quiz ${quizid} does not exist`
+                            });
+                        } else {
                             res.send(row);
                             res.locals.page_title = row.name;
                         }
@@ -305,7 +351,48 @@ const database = require('./database');
         }
     });
 
-    app.get('/:teamcode([\\da-f]+)', function(req, res) {
+    app.get('/:teamslug([\\da-z]+)/quizzes/:quizid(\\d+)', function (req, res) {
+        let teamslug = req.params.teamslug,
+            quizid = req.params.quizid,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            res.send({
+                'error': 'no quiz is open'
+            });
+        } else if (quizid != active) {
+            res.send({
+                'error': `quiz ${quizid} is not active`
+            });
+        } else {
+            db.get_team_by_slug(teamslug, function (err, row) {
+                if (err !== null) {
+                    res.send(err);
+                } else if (row === undefined) {
+                    res.send({
+                        'error': `team ${teamcode} does not exist`
+                    });
+                } else {
+                    db.get_quiz(quizid, function (err, row) {
+                        if (err !== null) {
+                            res.send({
+                                'error': err
+                            });
+                        } else if (row === undefined) {
+                            res.send({
+                                'error': `quiz ${quizid} does not exist`
+                            });
+                        } else {
+                            res.send(row);
+                            res.locals.page_title = row.name;
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    app.get('/:teamcode([\\da-f]+)', function (req, res) {
         let teamcode = req.params.teamcode,
             active = active_quiz.getid();
 
@@ -313,14 +400,12 @@ const database = require('./database');
             return res.redirect('lost.html');
         }
 
-        db.get_team_by_code(teamcode, function(err, row) {
+        db.get_team_by_code(teamcode, function (err, row) {
             if (err !== null) {
                 res.redirect('lost.html');
-            }
-            else if (row === undefined) {
+            } else if (row === undefined) {
                 res.redirect('lost.html');
-            }
-            else {
+            } else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
                 res.locals.page_title = 'Active Quiz';
@@ -329,7 +414,7 @@ const database = require('./database');
         });
     });
 
-    app.get('/:teamcode([\\da-z]+)', function(req, res) {
+    app.get('/:teamcode([\\da-z]+)', function (req, res) {
         let teamcode = req.params.teamcode,
             active = active_quiz.getid();
 
@@ -337,14 +422,12 @@ const database = require('./database');
             return res.redirect('lost.html');
         }
 
-        db.get_team_by_code(teamcode, function(err, row) {
+        db.get_team_by_code(teamcode, function (err, row) {
             if (err !== null) {
                 res.redirect('lost.html');
-            }
-            else if (row === undefined) {
+            } else if (row === undefined) {
                 res.redirect('lost.html');
-            }
-            else {
+            } else {
                 res.locals.teamcode = '/' + teamcode;
                 res.locals.quizid = active;
                 res.locals.page_title = 'Active Quiz';
@@ -353,7 +436,31 @@ const database = require('./database');
         });
     });
 
-    app.get('/', function(ignore, res) {
+    app.get('/team/:teamslug', function (req, res) {
+        let teamslug = req.params.teamslug,
+            active = active_quiz.getid();
+
+        if (active === -1) {
+            return res.redirect('lost.html');
+        }
+
+        db.get_team_by_slug(teamslug, function (err, row) {
+
+            if (err !== null) {
+                //res.redirect('lost.html');
+            } else if (row === undefined) {
+                //res.redirect('lost.html');
+            } else {
+                res.locals.teamcode = '/' + row.teamcode;
+                res.locals.teamslug = '/' + teamslug;
+                res.locals.quizid = active;
+                res.locals.page_title = 'Active Quiz';
+                res.render('quiz.hbs');
+            }
+        });
+    });
+
+    app.get('/', function (ignore, res) {
         res.redirect('lost.html');
     });
 

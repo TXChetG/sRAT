@@ -1,0 +1,5 @@
+//Global styles for HTML header elements across all page types.
+header {
+	@include xy-cell(full);
+	margin: rem-calc(20px) 0;
+}

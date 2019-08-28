@@ -1,4 +1,5 @@
 {{> header}}
+
 <body class="dashboard add-team">
 	<header>
 		<h1>Add a New Team</h1>
@@ -6,20 +7,20 @@
 	</header>
 	<section class="form__add-team__container">
 		<form class="form__add-team">
-				<div class="add__team-title">
-					<label>Team Name:
-						<input type="text" placeholder="Team Name">
+			<div class="add__team-title">
+				<label>Team Name:
+					<input type="text" placeholder="Team Name" name="teamname">
+				</label>
+			</div>
+			<div class="add__teammate">
+				<fieldset class="teammate__new fieldset">
+					<legend>Add people to the team.</legend>
+					<label>Team Member Name:
+						<input type="text" name="teammate0">
 					</label>
-				</div>
-				<div class="add__teammate">
-					<fieldset class="teammate__new fieldset">
-						<legend>Add people to the team.</legend>
-						<label>Team Member Name:
-							<input type="text" name="teammate0">
-						</label>
-					</fieldset>
-					<button class="button__add_teammate">Add a Team Member</button>
-				</div>
+				</fieldset>
+				<button class="button__add_teammate">Add a Team Member</button>
+			</div>
 			<button class="button">Add Team</button>
 		</form>
 	</section>
@@ -30,13 +31,13 @@
 			<a href="{{dashboard_root}}" class="button">Return to Dashboard</a>
 		</div>
 	</footer>
-<script src="/assets/js/create.js"></script>
-<script>
-	jQuery(document).ready(function($) {
-		$('.form__add-team').submit( e => {
-			e.preventDefault();
-			createNewTeam(e, '.form__add-team');
-		} );
-	});
-</script>
-{{> footer}}
+	<script src="/assets/js/create.js"></script>
+	<script>
+		jQuery(document).ready(function ($) {
+			$('.form__add-team').submit(e => {
+				e.preventDefault();
+				createNewTeam(e, '.form__add-team');
+			});
+		});
+	</script>
+	{{> footer}}

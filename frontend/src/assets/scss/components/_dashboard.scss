@@ -1,0 +1,170 @@
+.dashboard {
+	.dashboard__controls {
+		@include xy-grid-container($grid-container, false);
+		@include xy-grid(horizontal, true);
+		@include xy-cell(full);
+	}
+
+	.dashboard__quiz-management {
+		@include xy-cell(full);
+
+		@include breakpoint(large) {
+			@include xy-cell(6);
+		}
+
+		.quiz-management__buttons {
+			@include button-group();
+			@include button-group-stack();
+
+			@include breakpoint(large) {
+				@include button-group-unstack()
+			}
+		}
+	}
+
+	.dashboard__team-management {
+		@include xy-cell(full);
+
+		@include breakpoint(large) {
+			@include xy-cell(6);
+		}
+
+		.team-management__buttons {
+			@include button-group();
+			@include button-group-stack();
+
+			@include breakpoint(large) {
+				@include button-group-unstack()
+			}
+		}
+	}
+
+	.quiz__list {
+		@include xy-cell(full);
+	}
+
+	.quiz__row {
+		@include xy-grid-container($grid-container, false);
+		@include xy-grid(horizontal, true);
+		@include xy-cell(full);
+
+		background-color: $light-gray;
+		border-bottom: 1px solid $medium-gray;
+		padding: rem-calc(30px 15px);
+
+		&:last-child {
+			border-bottom: none;
+		}
+
+		.quiz__row__meta {
+			@include xy-cell(full);
+
+			@include breakpoint(medium) {
+				@include xy-cell(4);
+			}
+
+			h4 {
+				margin: 0;
+
+				@include breakpoint(small) {
+					margin-bottom: rem-calc(20px);
+				}
+			}
+		}
+
+		.quiz__row__actions {
+
+			@include breakpoint(medium) {
+				@include xy-cell(8);
+			}
+
+			@include button-group($buttongroup-child-selector, rem-calc(5px));
+			@include button-group-stack();
+
+			@include flex-align(center, middle);
+
+			@include breakpoint(medium) {
+				@include button-group-unstack();
+				@include flex-align(right, null);
+			}
+
+			margin: 0;
+
+			>button {
+				@include button-expand();
+
+				@include breakpoint(medium) {
+					@include button-expand(false);
+				}
+			}
+		}
+	}
+}
+
+.add-quiz {
+	&__form__container {
+		@include xy-cell(full);
+	}
+
+	&__form {
+		@include xy-grid-container($grid-container, false);
+		@include xy-grid(horizontal, true);
+		@include xy-cell(full);
+
+		.quiz__title {
+			@include xy-cell(full);
+		}
+
+		.quiz__questions {
+			@include xy-cell(full);
+
+			.quiz__question {
+				@include fieldset();
+				display: list-item;
+				position: relative;
+
+				&::marker {
+					content: counter(list-item);
+					background-color: #cacaca;
+					color: #FFF;
+					font-size: 8rem;
+					position: absolute;
+					top: -1px;
+					left: -7rem;
+					width: 7rem;
+				}
+			}
+
+			.button__add-question {
+				@include button();
+			}
+		}
+	}
+}
+
+.add-team {
+	.form__add-team__container {
+		@include xy-cell(full);
+
+		.form__add-team {
+			@include xy-grid-container($grid-container, false);
+			@include xy-grid(horizontal, true);
+		}
+	}
+
+	.form__team-title {
+		@include xy-cell(full);
+	}
+
+	.add__teammate {
+		@include xy-cell(full);
+	}
+
+	.button__add_teammate {
+		@include button();
+	}
+
+	.add__team-footer {
+		@include xy-cell(full);
+	}
+}

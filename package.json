@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
+    "dev": "nodemon main.js",
     "lint": "eslint --format codeframe --ext js .",
     "fix": "eslint --format codeframe --fix --ext js .",
     "test": "jest"

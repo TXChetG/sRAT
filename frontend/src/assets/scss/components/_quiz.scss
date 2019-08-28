@@ -1,0 +1,26 @@
+.quiz {
+	.quiz__container {
+		@include xy-cell(full);
+	}
+	.quiz__question {
+		background-color: $light-gray;
+		border: 2px solid $medium-gray;
+		border-radius: 5px;
+		padding: rem-calc(15px);
+		margin: rem-calc(20px 0);
+	}
+	.question__choices {
+		.button {
+			margin-bottom: rem-calc(2px);
+			&:last-child {
+				margin-bottom: rem-calc(2px);
+			}
+			&.correct {
+				background-color: $success-color;
+			}
+			&.incorrect {
+				background-color: $alert-color;
+			}
+		}
+	}
+}
