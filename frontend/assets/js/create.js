@@ -40,20 +40,20 @@ const createNewQuiz = (e, form) => {
     let formObj = $(form);
     const data = formToJSON(formObj[0].elements);
     // console.log(JSON.stringify(data, null, " "));
-    // console.log(data);
+    //console.log(data);
     let api_data = {
         'name': data.quiz_title,
         'questions': []
     };
 
     const dataProps = Object.getOwnPropertyNames(data);
-    console.log(dataProps);
+    console.warn(dataProps);
     const questionList = dataProps.filter(property => {
         if (property.match(/question_\d+/)) {
             return true;
         }
     });
-    //console.log(questionList);
+    //console.warn(questionList);
 
     const questionObjtoJSON = (array, data) => {
         const questionArray = [];

@@ -18,7 +18,7 @@ require('foundation-sites');
 const add_question = (selector, button) => {
 	let i = $(selector).length;
 	let question_template = `<article class="quiz__question">
-		<label>Question Text:
+			<label>Question Text:
 			<input type="text" name="question_${i}">
 		</label>
 		<label>First Answer Choice:
@@ -70,7 +70,7 @@ $('.quiz').ready(() => {
 $('.add-quiz').ready(() => {
 	$('.button__add-question').click((e) => {
 		e.preventDefault();
-		add_question('.quiz__questions', '.button__add-question');
+		add_question('.quiz__question', '.button__add-question');
 	});
 });
 
